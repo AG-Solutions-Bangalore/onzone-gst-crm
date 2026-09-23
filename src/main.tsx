@@ -1,18 +1,31 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import "./index.css"
-import App from "./App.tsx"
-import { AppToaster } from "@/components/app-toaster.tsx"
-import { QueryProvider } from "@/components/query-provider.tsx"
-import { ThemeProvider } from "@/components/theme-provider.tsx"
+import { RootLayout } from "@/components/layouts/root-layout.tsx"
+import { MainProvider } from "@/components/providers/mainProvider.tsx"
+import { ClientsPage } from "@/pages/clients.tsx"
+import { DashboardPage } from "@/pages/dashboard.tsx"
+import { InvoicesPage } from "@/pages/invoices.tsx"
+import { NotFoundPage } from "@/pages/not-found.tsx"
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <DashboardPage /> },
+      { path: "clients", element: <ClientsPage /> },
+      { path: "invoices", element: <InvoicesPage /> },
+      { path: "*", element: <NotFoundPage /> },
+    ],
+  },
+])
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider>
-      <QueryProvider>
-        <App />
-        <AppToaster />
-      </QueryProvider>
-    </ThemeProvider>
+    <MainProvider>
+      <RouterProvider router={router} />
+    </MainProvider>
   </StrictMode>,
 )
