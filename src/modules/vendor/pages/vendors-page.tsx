@@ -1,16 +1,18 @@
 import * as React from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import toast from "react-hot-toast"
-import { RefreshCw } from "lucide-react"
+import { Loader2, RefreshCw } from "lucide-react"
 
 import { DataTable } from "@/components/data-table.tsx"
 import { Button } from "@/components/ui/button.tsx"
+import { cn } from "@/lib/utils.ts"
 import {
   Card,
   CardContent,
 } from "@/components/ui/card.tsx"
 import { Skeleton } from "@/components/ui/skeleton.tsx"
 import { vendorTableColumns } from "@/modules/vendor/components/vendor-columns.tsx"
+import { ExportVendorsButton } from "@/modules/vendor/components/export-vendors-button.tsx"
 import {
   useVendorGstDetailsList,
   useVendorGstList,
@@ -86,11 +88,20 @@ export function VendorsPage() {
 
   const isLoading = listQuery.isLoading || detailsQuery.isLoading
   const isError = listQuery.isError || detailsQuery.isError
+  const isFetching = listQuery.isFetching || detailsQuery.isFetching
   const isFiltered = status !== "all" || type !== "all"
 
   function handleRefresh() {
-    void Promise.all([listQuery.refetch(), detailsQuery.refetch()])
-    toast("Refreshing vendor registry…")
+    const id = toast.loading("Refreshing vendor registry…")
+    void Promise.all([listQuery.refetch(), detailsQuery.refetch()]).then(
+      (results) => {
+        if (results.some((r) => r.isError)) {
+          toast.error("Refresh failed. Try again.", { id })
+        } else {
+          toast.success("Vendor registry up to date.", { id })
+        }
+      },
+    )
   }
 
   return (
@@ -104,9 +115,22 @@ export function VendorsPage() {
             Every GSTIN in the workspace — search, filter, and open a profile.
           </p>
         </div>
-        <Button variant="secondary" size="sm" onClick={handleRefresh}>
-          <RefreshCw className="size-3" /> Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <ExportVendorsButton rows={filteredRows} disabled={isLoading || isError} />
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={isFetching}
+          >
+            {isFetching ? (
+              <Loader2 className="size-3 animate-spin" />
+            ) : (
+              <RefreshCw className="size-3" />
+            )}
+            {isFetching ? "Refreshing…" : "Refresh"}
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -166,19 +190,26 @@ export function VendorsPage() {
                   </span>
                 </div>
               </div>
-              <DataTable
-                key={`${status}-${type}`}
-                columns={vendorTableColumns}
-                data={filteredRows}
-                searchPlaceholder="Search GSTIN, business…"
-                pageSize={10}
-                emptyMessage={
-                  isFiltered
-                    ? "No vendors match these filters."
-                    : "No vendors found."
-                }
-                onRowClick={(row) => navigate(`/vendors/${row.vendor_gst}`)}
-              />
+              <div
+                className={cn(
+                  "transition-opacity duration-150",
+                  isFetching && "pointer-events-none opacity-60",
+                )}
+              >
+                <DataTable
+                  key={`${status}-${type}`}
+                  columns={vendorTableColumns}
+                  data={filteredRows}
+                  searchPlaceholder="Search GSTIN, business…"
+                  pageSize={10}
+                  emptyMessage={
+                    isFiltered
+                      ? "No vendors match these filters."
+                      : "No vendors found."
+                  }
+                  onRowClick={(row) => navigate(`/vendors/${row.vendor_gst}`)}
+                />
+              </div>
             </>
           )}
         </CardContent>

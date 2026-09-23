@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card.tsx"
 import { Skeleton } from "@/components/ui/skeleton.tsx"
 import { gstinStatusVariant } from "@/modules/vendor/components/vendor-columns.tsx"
+import { ExportVendorDetailsButton } from "@/modules/vendor/components/export-vendor-details-button.tsx"
 import { useVendorGstDetails } from "@/modules/vendor/hooks/use-vendors.ts"
 
 function Field({ label, value }: { label: string; value?: string | null }) {
@@ -111,13 +112,14 @@ export function VendorDetailsPage() {
               </Button>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge variant={gstinStatusVariant(vendor.gstin_status)}>
               {vendor.gstin_status || "Unknown"}
             </Badge>
             {vendor.taxpayer_type && (
               <Badge variant="outline">{vendor.taxpayer_type}</Badge>
             )}
+            <ExportVendorDetailsButton vendor={vendor} />
           </div>
         </CardContent>
       </Card>

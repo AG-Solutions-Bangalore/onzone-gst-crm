@@ -3,7 +3,6 @@ import toast from "react-hot-toast"
 import { LayoutDashboard, LogOut, Store, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button.tsx"
-import { Badge } from "@/components/ui/badge.tsx"
 import { cn } from "@/lib/utils.ts"
 import { useAuth } from "@/modules/auth/index.ts"
 
@@ -139,9 +138,8 @@ function SidebarContent({
           <img
             src="/logo.svg"
             alt="OnZone"
-            className={cn("w-auto", collapsed ? "h-5 max-w-full" : "h-8 w-full")}
+            className={cn("w-auto", collapsed ? "h-5 max-w-full" : "h-8 max-w-full")}
           />
-       
         </div>
         {onClose && (
           <Button

@@ -2,6 +2,8 @@
 
 export { fetchVendorGstDetailsList, fetchVendorGstList } from "@/modules/vendor/api/vendor.api.ts"
 export { StatCard } from "@/modules/vendor/components/stat-card.tsx"
+export { ExportVendorsButton } from "@/modules/vendor/components/export-vendors-button.tsx"
+export { ExportVendorDetailsButton } from "@/modules/vendor/components/export-vendor-details-button.tsx"
 export {
   attentionColumns,
   fetchStatusVariant,

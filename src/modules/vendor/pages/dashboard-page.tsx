@@ -6,6 +6,7 @@ import {
   BadgeCheck,
   Building2,
   ChevronRight,
+  Loader2,
   Receipt,
   RefreshCw,
 } from "lucide-react"
@@ -118,6 +119,17 @@ export function DashboardPage() {
     [vendors],
   )
 
+  function handleRefresh() {
+    const id = toast.loading("Refreshing vendor data…")
+    void detailsQuery.refetch().then((result) => {
+      if (result.isError) {
+        toast.error("Refresh failed. Try again.", { id })
+      } else {
+        toast.success("Vendor data up to date.", { id })
+      }
+    })
+  }
+
   if (detailsQuery.isLoading) {
     return (
       <div className="flex flex-col gap-6">
@@ -166,12 +178,15 @@ export function DashboardPage() {
         <Button
           variant="secondary"
           size="sm"
-          onClick={() => {
-            void detailsQuery.refetch()
-            toast("Refreshing vendor data…")
-          }}
+          onClick={handleRefresh}
+          disabled={detailsQuery.isFetching}
         >
-          <RefreshCw className="size-3" /> Refresh
+          {detailsQuery.isFetching ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <RefreshCw className="size-3" />
+          )}
+          {detailsQuery.isFetching ? "Refreshing…" : "Refresh"}
         </Button>
       </div>
 
