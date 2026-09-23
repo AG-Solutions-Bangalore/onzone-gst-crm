@@ -9,9 +9,11 @@ import {
   LoginPage,
   RequireAuth,
 } from "@/modules/auth/index.ts"
-import { ClientsPage } from "@/pages/clients.tsx"
-import { DashboardPage } from "@/pages/dashboard.tsx"
-import { InvoicesPage } from "@/pages/invoices.tsx"
+import {
+  DashboardPage,
+  VendorDetailsPage,
+  VendorsPage,
+} from "@/modules/vendor/index.ts"
 import { NotFoundPage } from "@/pages/not-found.tsx"
 
 const router = createBrowserRouter([
@@ -26,8 +28,8 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <DashboardPage /> },
-      { path: "clients", element: <ClientsPage /> },
-      { path: "invoices", element: <InvoicesPage /> },
+      { path: "vendors", element: <VendorsPage /> },
+      { path: "vendors/:gstin", element: <VendorDetailsPage /> },
     ],
   },
   { path: "*", element: <NotFoundPage /> },

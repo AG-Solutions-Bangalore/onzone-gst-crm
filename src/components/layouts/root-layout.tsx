@@ -1,107 +1,108 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom"
-import toast from "react-hot-toast"
-import { LogOut } from "lucide-react"
+import * as React from "react"
+import { Outlet, useLocation } from "react-router-dom"
+import { ChevronsLeft, ChevronsRight, Menu } from "lucide-react"
 
+import { Sidebar } from "@/components/layouts/sidebar.tsx"
 import { ThemeToggle } from "@/components/theme-toggle.tsx"
-import { Badge } from "@/components/ui/badge.tsx"
 import { Button } from "@/components/ui/button.tsx"
-import { cn } from "@/lib/utils.ts"
-import {
-  AuthSessionWatcher,
-  useAuth,
-} from "@/modules/auth/index.ts"
+import { AuthSessionWatcher, useAuth } from "@/modules/auth/index.ts"
 
-const NAV = [
-  { to: "/", label: "Dashboard", end: true },
-  { to: "/clients", label: "Clients", end: false },
-  { to: "/invoices", label: "Invoices", end: false },
-]
-
-function NavLinks({ className }: { className?: string }) {
-  return (
-    <nav className={cn("flex items-center gap-1", className)}>
-      {NAV.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.end}
-          className={({ isActive }) =>
-            cn(
-              "rounded-md px-3 py-2 text-sm transition-colors duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]",
-              isActive
-                ? "bg-surface-low text-primary font-medium"
-                : "text-muted-foreground hover:bg-surface-lowest hover:text-foreground",
-            )
-          }
-        >
-          {item.label}
-        </NavLink>
-      ))}
-    </nav>
-  )
+function pageTitle(pathname: string): string {
+  if (pathname === "/") return "Dashboard"
+  if (pathname === "/vendors") return "Vendors"
+  if (pathname.startsWith("/vendors/")) return "Vendor details"
+  return "OnZone"
 }
 
-/** App shell: top bar + nav, route outlet, footer. */
+/** Dashboard shell: left sidebar + topbar + full-width content. */
 export function RootLayout() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const [sidebarOpen, setSidebarOpen] = React.useState(false)
+  const [collapsed, setCollapsed] = React.useState<boolean>(() => {
+    try {
+      return localStorage.getItem("onzone.sidebar.collapsed") === "1"
+    } catch {
+      return false
+    }
+  })
+  const { pathname } = useLocation()
+  const { user } = useAuth()
 
-  function handleLogout() {
-    logout()
-    toast("Signed out.")
-    navigate("/login", { replace: true })
+  React.useEffect(() => {
+    setSidebarOpen(false)
+  }, [pathname])
+
+  function toggleCollapsed() {
+    setCollapsed((prev) => {
+      const next = !prev
+      try {
+        localStorage.setItem("onzone.sidebar.collapsed", next ? "1" : "0")
+      } catch {
+        // private mode — preference just won't persist
+      }
+      return next
+    })
   }
 
   return (
-    <div className="bg-background text-foreground min-h-screen">
+    <div className="bg-background text-foreground flex min-h-screen">
       <AuthSessionWatcher />
-      <header className="border-outline-variant/60 border-b">
-        <div className="mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between px-6">
-          <div className="flex items-center gap-2.5">
-            <span className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-full text-sm font-bold">
-              O
-            </span>
-            <span className="text-sm font-medium tracking-tight">
-              OnZone GST CRM
-            </span>
-            <Badge variant="muted" className="ml-1 hidden sm:inline-flex">
-              alpha
-            </Badge>
-          </div>
-          <NavLinks className="hidden md:flex" />
-          <div className="flex items-center gap-2">
-            {user && (
-              <Badge variant="muted" className="hidden sm:inline-flex">
-                {user.name}
-              </Badge>
-            )}
-            <ThemeToggle />
-            <Button
-              variant="secondary"
-              size="icon"
-              aria-label="Log out"
-              onClick={handleLogout}
-            >
-              <LogOut className="size-4" />
-            </Button>
-            <Button onClick={() => toast.success("Workspace deployed.")}>
-              Deploy now
-            </Button>
-          </div>
-        </div>
-        <div className="mx-auto w-full max-w-[1280px] px-6 pb-3 md:hidden">
-          <NavLinks />
-        </div>
-      </header>
+      <Sidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        collapsed={collapsed}
+      />
 
-      <main className="mx-auto w-full max-w-[1280px] px-6 pb-16">
-        <Outlet />
-      </main>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="border-outline-variant/60 bg-background/80 sticky top-0 z-30 border-b backdrop-blur">
+          <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+            <div className="flex min-w-0 items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Open menu"
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden"
+              >
+                <Menu className="size-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                onClick={toggleCollapsed}
+                className="hidden lg:inline-flex"
+              >
+                {collapsed ? (
+                  <ChevronsRight className="size-4" />
+                ) : (
+                  <ChevronsLeft className="size-4" />
+                )}
+              </Button>
+              <h1 className="truncate text-base font-medium tracking-tight">
+                {pageTitle(pathname)}
+              </h1>
+            </div>
+            <div className="flex items-center gap-2">
+              {user && (
+                <span className="text-muted-foreground hidden text-sm md:block">
+                  {user.name}
+                </span>
+              )}
+              <ThemeToggle />
+            </div>
+          </div>
+        </header>
 
-      <footer className="mx-auto flex w-full max-w-[1280px] flex-wrap items-center justify-between gap-2 px-6 pb-10 text-xs text-muted-foreground">
-        <span>OnZone GST CRM · Technical Minimalism · DESIGN.md tokens</span>
-        <span>Light / dark · Query · Table · shadcn · hot-toast</span>
-      </footer>
+        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <Outlet />
+        </main>
+
+        <footer className="border-outline-variant/60 text-muted-foreground flex flex-wrap items-center justify-between gap-2 border-t px-4 py-4 text-xs sm:px-6 lg:px-8">
+          <span>OnZone GST CRM · Technical Minimalism · DESIGN.md tokens</span>
+          <span>Crafted by <a href="https://ag-solutions.in/" className="text-primary">ag-solutions</a></span>
+        </footer>
+      </div>
     </div>
   )
 }
