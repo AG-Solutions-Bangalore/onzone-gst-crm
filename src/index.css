@@ -1,0 +1,276 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * DESIGN.md — "Vercel / Technical Minimalism" theme primitives
+ * Tailwind CSS v4 theme tokens with light + dark mode.
+ *
+ * Light values are taken 1:1 from DESIGN.md.
+ * Dark values are the same system inverted (charcoal <-> off-white,
+ * containers stepped up the gray ramp, accents kept, containers darkened).
+ */
+
+:root {
+  /* ---- surfaces (light = DESIGN.md) ---- */
+  --surface: #fafafa;
+  --surface-dim: #f5f5f5;
+  --surface-bright: #ffffff;
+  --surface-lowest: #f0f0f0;
+  --surface-low: #ededed;
+  --surface-container: #eaeaea;
+  --surface-high: #e0e0e0;
+  --surface-highest: #d4d4d4;
+  --on-surface: #171717;
+  --on-surface-variant: #666666;
+  --inverse-surface: #1f1f1f;
+  --inverse-on-surface: #f5f5f5;
+  --outline: #cccccc;
+  --outline-variant: #b3b3b3;
+
+  /* ---- brand ---- */
+  --primary: #171717;
+  --on-primary: #ffffff;
+  --primary-container: #333333;
+  --on-primary-container: #f5f5f5;
+  --inverse-primary: #ffffff;
+
+  --secondary: #95bf47;
+  --on-secondary: #1f1f1f;
+  --secondary-container: #c8e6a0;
+  --on-secondary-container: #2d4a0f;
+
+  --tertiary: #de2670;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #f5a3c7;
+  --on-tertiary-container: #5a0a2a;
+
+  --error: #d32f2f;
+  --on-error: #ffffff;
+  --error-container: #ffcdd2;
+  --on-error-container: #b71c1c;
+
+  /* ---- shadcn-mapped tokens (light) ---- */
+  --background: #fafafa;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  --primary-fg: #ffffff;
+  --muted: #ededed;
+  --muted-foreground: #666666;
+  --accent: #eaeaea;
+  --accent-foreground: #171717;
+  --destructive: #d32f2f;
+  --destructive-foreground: #ffffff;
+  --border: #cccccc;
+  --input: #cccccc;
+  --ring: #171717;
+  --success: #95bf47;
+  --success-foreground: #1f1f1f;
+  --warning: #eab308;
+  --info: #0ea5e9;
+
+  --radius: 6px; /* DESIGN.md DEFAULT */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.dark {
+  /* ---- surfaces (dark = inverted ramp) ---- */
+  --surface: #0a0a0a;
+  --surface-dim: #111111;
+  --surface-bright: #171717;
+  --surface-lowest: #101010;
+  --surface-low: #161616;
+  --surface-container: #1f1f1f;
+  --surface-high: #2a2a2a;
+  --surface-highest: #333333;
+  --on-surface: #fafafa;
+  --on-surface-variant: #a3a3a3;
+  --inverse-surface: #fafafa;
+  --inverse-on-surface: #171717;
+  --outline: #2e2e2e;
+  --outline-variant: #404040;
+
+  /* ---- brand (dark) ---- */
+  --primary: #fafafa;
+  --on-primary: #171717;
+  --primary-container: #e5e5e5;
+  --on-primary-container: #171717;
+  --inverse-primary: #171717;
+
+  --secondary: #95bf47;
+  --on-secondary: #0a0a0a;
+  --secondary-container: #2d4a0f;
+  --on-secondary-container: #c8e6a0;
+
+  --tertiary: #f0568c;
+  --on-tertiary: #14030b;
+  --tertiary-container: #5a0a2a;
+  --on-tertiary-container: #f5a3c7;
+
+  --error: #ef4444;
+  --on-error: #ffffff;
+  --error-container: #450a0a;
+  --on-error-container: #fecaca;
+
+  /* ---- shadcn-mapped tokens (dark) ---- */
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #171717;
+  --card-foreground: #fafafa;
+  --popover: #171717;
+  --popover-foreground: #fafafa;
+  --primary-fg: #171717;
+  --muted: #1f1f1f;
+  --muted-foreground: #a3a3a3;
+  --accent: #2a2a2a;
+  --accent-foreground: #fafafa;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #2e2e2e;
+  --input: #2e2e2e;
+  --ring: #fafafa;
+  --success: #95bf47;
+  --success-foreground: #0a0a0a;
+  --warning: #eab308;
+  --info: #38bdf8;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+
+@theme inline {
+  /* surfaces */
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-lowest: var(--surface-lowest);
+  --color-surface-low: var(--surface-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-high: var(--surface-high);
+  --color-surface-highest: var(--surface-highest);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-on-surface: var(--inverse-on-surface);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  /* brand */
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-inverse-primary: var(--inverse-primary);
+
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+
+  --color-error: var(--error);
+  --color-on-error: var(--on-error);
+  --color-error-container: var(--error-container);
+  --color-on-error-container: var(--on-error-container);
+
+  /* shadcn */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-fg);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+
+  /* typography — DESIGN.md: GeistSans + system stack */
+  --font-sans: "GeistSans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --text-display: 64px;
+  --text-headline-lg: 40px;
+  --text-headline-md: 28px;
+  --text-title-lg: 20px;
+
+  /* shape — DESIGN.md */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* elevation — DESIGN.md */
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-size: 16px;
+    line-height: 24px; /* body-md */
+    transition:
+      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+      color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  ::selection {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+  }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
