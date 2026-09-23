@@ -1,10 +1,15 @@
-import { NavLink, Outlet } from "react-router-dom"
+import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
+import { LogOut } from "lucide-react"
 
 import { ThemeToggle } from "@/components/theme-toggle.tsx"
 import { Badge } from "@/components/ui/badge.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { cn } from "@/lib/utils.ts"
+import {
+  AuthSessionWatcher,
+  useAuth,
+} from "@/modules/auth/index.ts"
 
 const NAV = [
   { to: "/", label: "Dashboard", end: true },
@@ -38,8 +43,18 @@ function NavLinks({ className }: { className?: string }) {
 
 /** App shell: top bar + nav, route outlet, footer. */
 export function RootLayout() {
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    logout()
+    toast("Signed out.")
+    navigate("/login", { replace: true })
+  }
+
   return (
     <div className="bg-background text-foreground min-h-screen">
+      <AuthSessionWatcher />
       <header className="border-outline-variant/60 border-b">
         <div className="mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
@@ -55,7 +70,20 @@ export function RootLayout() {
           </div>
           <NavLinks className="hidden md:flex" />
           <div className="flex items-center gap-2">
+            {user && (
+              <Badge variant="muted" className="hidden sm:inline-flex">
+                {user.name}
+              </Badge>
+            )}
             <ThemeToggle />
+            <Button
+              variant="secondary"
+              size="icon"
+              aria-label="Log out"
+              onClick={handleLogout}
+            >
+              <LogOut className="size-4" />
+            </Button>
             <Button onClick={() => toast.success("Workspace deployed.")}>
               Deploy now
             </Button>
