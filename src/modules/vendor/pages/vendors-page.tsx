@@ -13,6 +13,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton.tsx"
 import { vendorTableColumns } from "@/modules/vendor/components/vendor-columns.tsx"
 import { ExportVendorsButton } from "@/modules/vendor/components/export-vendors-button.tsx"
+import { VendorGstTemplateButton } from "@/modules/vendor/components/vendor-gst-template-button.tsx"
+import { UploadVendorGstButton } from "@/modules/vendor/components/upload-vendor-gst-button.tsx"
+import { UpdateVendorGstDetailsButton } from "@/modules/vendor/components/update-vendor-gst-details-button.tsx"
 import {
   useVendorGstDetailsList,
   useVendorGstList,
@@ -115,7 +118,10 @@ export function VendorsPage() {
             Every GSTIN in the workspace — search, filter, and open a profile.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <VendorGstTemplateButton />
+          <UploadVendorGstButton />
+          <UpdateVendorGstDetailsButton />
           <ExportVendorsButton rows={filteredRows} disabled={isLoading || isError} />
           <Button
             variant="secondary"
