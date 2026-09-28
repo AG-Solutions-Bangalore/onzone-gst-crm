@@ -1,7 +1,9 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   fetchVendorGstDetailsList,
   fetchVendorGstList,
+  updateVendorGstDetails,
+  uploadVendorGstFile,
 } from "@/modules/vendor/api/vendor.api.ts"
 
 /** Reference data — fresh for 2 min, cached for 10. */
@@ -33,4 +35,32 @@ export function useVendorGstDetails(gstin: string | undefined) {
   const detailsQuery = useVendorGstDetailsList()
   const vendor = detailsQuery.data?.find((v) => v.vendor_gst === gstin) ?? null
   return { ...detailsQuery, vendor }
+}
+
+/** `POST upload-vendor-gst-file` — invalidates vendor lists on success. */
+export function useUploadVendorGstFile() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (file: File) => uploadVendorGstFile(file),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["vendor-gst-list"] })
+      void queryClient.invalidateQueries({
+        queryKey: ["vendor-gst-details-list"],
+      })
+    },
+  })
+}
+
+/** `GET updateVendorGSTDetails` — backend refresh, then invalidate lists. */
+export function useUpdateVendorGstDetails() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => updateVendorGstDetails(),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["vendor-gst-list"] })
+      void queryClient.invalidateQueries({
+        queryKey: ["vendor-gst-details-list"],
+      })
+    },
+  })
 }
