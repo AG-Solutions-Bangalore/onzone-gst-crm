@@ -197,7 +197,7 @@ export function DashboardPage() {
             value={String(stats.total)}
             hint="tracked GSTINs"
             icon={Building2}
-            to="/vendors"
+            to="/sync-details"
           />
         </div>
         <div className="col-span-12 sm:col-span-6 lg:col-span-3">
@@ -207,7 +207,7 @@ export function DashboardPage() {
             hint="filing-ready taxpayers"
             icon={BadgeCheck}
             tone="success"
-            to="/vendors?status=active"
+            to="/sync-details?status=active"
           />
         </div>
         <div className="col-span-12 sm:col-span-6 lg:col-span-3">
@@ -217,7 +217,7 @@ export function DashboardPage() {
             hint="suspended / cancelled"
             icon={AlertTriangle}
             tone={stats.attention > 0 ? "error" : "default"}
-            to="/vendors?status=attention"
+            to="/sync-details?status=attention"
           />
         </div>
         <div className="col-span-12 sm:col-span-6 lg:col-span-3">
@@ -227,7 +227,7 @@ export function DashboardPage() {
             hint="of total vendors"
             icon={Receipt}
             tone="accent"
-            to="/vendors?type=Composition"
+            to="/sync-details?type=Composition"
           />
         </div>
       </div>
@@ -244,7 +244,7 @@ export function DashboardPage() {
               </div>
               {attentionVendors.length > 0 && (
                 <Button variant="link" className="h-auto p-0" asChild>
-                  <Link to="/vendors?status=attention">
+                  <Link to="/sync-details?status=attention">
                     View all <ChevronRight className="size-4" />
                   </Link>
                 </Button>
@@ -257,7 +257,7 @@ export function DashboardPage() {
               data={attentionVendors}
               pageSize={5}
               emptyMessage="All clear — every GSTIN is active."
-              onRowClick={(row) => navigate(`/vendors/${row.vendor_gst}`)}
+              onRowClick={(row) => navigate(`/sync-details/${row.vendor_gst}`)}
             />
           </CardContent>
         </Card>
@@ -289,7 +289,7 @@ export function DashboardPage() {
           {recentVendors.map((v) => (
             <Link
               key={v.vendor_gst}
-              to={`/vendors/${v.vendor_gst}`}
+              to={`/sync-details/${v.vendor_gst}`}
               className="hover:bg-surface-low flex items-center justify-between gap-3 rounded-md px-2 py-2.5 transition-colors"
             >
               <div className="min-w-0">

@@ -74,12 +74,18 @@ export function DataTable<TData, TValue>({
     pageSize,
   })
 
-  const pagination = manualPagination
+  const isManual =
+    manualPagination ||
+    onPageChange !== undefined ||
+    onPageSizeChange !== undefined ||
+    pageCount !== undefined
+
+  const pagination = isManual
     ? { pageIndex, pageSize }
     : internalPagination
 
-  const effectivePageCount = manualPagination
-    ? pageCount ?? (totalRows ? Math.ceil(totalRows / pageSize) : 1)
+  const effectivePageCount = isManual
+    ? pageCount ?? (totalRows ? Math.max(1, Math.ceil(totalRows / pageSize)) : 1)
     : undefined
 
   const table = useReactTable({
@@ -87,17 +93,17 @@ export function DataTable<TData, TValue>({
     columns,
     state: {
       sorting,
-      globalFilter: manualPagination ? "" : globalFilter,
+      globalFilter: isManual ? "" : globalFilter,
       pagination,
     },
-    manualPagination,
+    manualPagination: isManual,
     pageCount: effectivePageCount,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: (updater) => {
       const next =
         typeof updater === "function" ? updater(pagination) : updater
-      if (manualPagination) {
+      if (isManual) {
         if (next.pageIndex !== pagination.pageIndex) {
           onPageChange?.(next.pageIndex)
         }
@@ -110,7 +116,7 @@ export function DataTable<TData, TValue>({
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: manualPagination ? undefined : getFilteredRowModel(),
+    getFilteredRowModel: isManual ? undefined : getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     globalFilterFn: (row, _columnId, filterValue) => {
       if (!searchKey) {
@@ -125,13 +131,13 @@ export function DataTable<TData, TValue>({
     },
   })
 
-  const currentSearch = manualPagination ? (searchValue ?? "") : globalFilter
+  const currentSearch = isManual ? (searchValue ?? "") : globalFilter
 
-  const totalCount = manualPagination
+  const totalCount = isManual
     ? (totalRows ?? data.length)
     : table.getFilteredRowModel().rows.length
 
-  const displayPageCount = manualPagination
+  const displayPageCount = isManual
     ? Math.max(1, effectivePageCount || 1)
     : Math.max(1, table.getPageCount() || 1)
 
@@ -238,7 +244,7 @@ export function DataTable<TData, TValue>({
               value={pagination.pageSize}
               onChange={(e) => {
                 const nextSize = Number(e.target.value)
-                if (manualPagination) {
+                if (isManual) {
                   onPageSizeChange?.(nextSize)
                 } else {
                   table.setPageSize(nextSize)
@@ -260,13 +266,13 @@ export function DataTable<TData, TValue>({
             variant="secondary"
             size="sm"
             onClick={() => {
-              if (manualPagination) {
+              if (isManual) {
                 onPageChange?.(Math.max(0, pagination.pageIndex - 1))
               } else {
                 table.previousPage()
               }
             }}
-            disabled={pagination.pageIndex === 0}
+            disabled={pagination.pageIndex <= 0}
           >
             <ChevronLeft className="size-4" /> Prev
           </Button>
@@ -274,7 +280,7 @@ export function DataTable<TData, TValue>({
             variant="secondary"
             size="sm"
             onClick={() => {
-              if (manualPagination) {
+              if (isManual) {
                 onPageChange?.(pagination.pageIndex + 1)
               } else {
                 table.nextPage()

@@ -45,8 +45,11 @@ export function useVendorGstSyncDetailsList(params?: PaginationParams) {
 /** Single GST profile looked up from the cached sync list. */
 export function useVendorGstDetails(gstin: string | undefined) {
   const syncQuery = useVendorGstSyncDetailsList()
+  const cleanGstin = gstin?.trim().toUpperCase()
   const vendor =
-    syncQuery.data?.find((v) => v.vendor_gst === gstin) ?? null
+    syncQuery.data?.find(
+      (v) => v.vendor_gst?.trim().toUpperCase() === cleanGstin,
+    ) ?? null
   return { ...syncQuery, vendor }
 }
 

@@ -1,6 +1,7 @@
 import * as React from "react"
 import toast from "react-hot-toast"
-import { AlertTriangle, Loader2, Trash2 } from "lucide-react"
+import { Loader2, Trash2 } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
 
 import {
   AlertDialog,
@@ -15,102 +16,182 @@ import {
 } from "@/components/ui/alert-dialog.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { getApiErrorMessage } from "@/lib/axios.ts"
+import { deleteVendorGstDetails } from "@/modules/vendor/api/vendor-party.api.ts"
+import { invalidateVendorLists } from "@/modules/vendor/hooks/query-keys.ts"
 import { useDeleteVendorGstDetails } from "@/modules/vendor/hooks/use-vendors.ts"
 
-export interface DeleteVendorGstDetailsButtonProps {
-  disabled?: boolean
-}
-
 /**
- * Single delete trigger for `DELETE /delete-vendor-gst-details` (from Postman collection).
- * In Postman, this endpoint takes no parameters and deletes/clears vendor GST details.
- * Prompts user for explicit permission via a Shadcn AlertDialog confirmation dialog.
+ * `DELETE delete-vendor-gst-details` — no ID input, just confirmation:
+ * 1. Row action: `id` given -> trash icon button, confirms that one record.
+ * 2. Header action: `ids` given -> "Delete (N)" button, confirms the listed
+ *    records once and deletes them one by one (the endpoint only supports
+ *    one row per call), with a progress toast.
  */
 export function DeleteVendorGstDetailsButton({
-  disabled = false,
-}: DeleteVendorGstDetailsButtonProps) {
+  id: initialId,
+  ids,
+  partyName,
+  disabled,
+}: {
+  id?: number | string
+  ids?: (number | string)[]
+  partyName?: string | null
+  disabled?: boolean
+}) {
   const [open, setOpen] = React.useState(false)
+  const [bulkDeleting, setBulkDeleting] = React.useState(false)
+  const queryClient = useQueryClient()
   const deleteMutation = useDeleteVendorGstDetails()
 
-  function handleConfirmDelete(e: React.MouseEvent) {
-    e.preventDefault()
+  const isRowMode = initialId !== undefined
+  const bulkIds = ids ?? []
+  const pending = deleteMutation.isPending || bulkDeleting
 
-    const toastId = toast.loading("Executing delete request…")
-    deleteMutation.mutate(undefined, {
+  function handleRowConfirm(e: React.MouseEvent) {
+    // Keep the dialog open until the request settles.
+    e.preventDefault()
+    if (initialId === undefined) return
+    const toastId = toast.loading(`Deleting GST details #${initialId}…`)
+    deleteMutation.mutate(initialId, {
       onSuccess: () => {
-        toast.success("Vendor GST details deleted successfully.", { id: toastId })
+        toast.success(`GST details #${initialId} deleted.`, { id: toastId })
         setOpen(false)
       },
       onError: (error) => {
-        // Backend currently returns 500 (Laravel Model::delete bug in GSTController.php:317)
         toast.error(getApiErrorMessage(error), { id: toastId })
         setOpen(false)
       },
     })
   }
 
+  async function handleBulkConfirm(e: React.MouseEvent) {
+    // Keep the dialog open until all requests settle.
+    e.preventDefault()
+    if (bulkIds.length === 0) return
+    setBulkDeleting(true)
+    const toastId = toast.loading(`Deleting 0 of ${bulkIds.length}…`)
+    let done = 0
+    let failed = 0
+    for (const bulkId of bulkIds) {
+      try {
+        await deleteVendorGstDetails(bulkId)
+        done += 1
+      } catch {
+        failed += 1
+      }
+      toast.loading(`Deleting ${done + failed} of ${bulkIds.length}…`, {
+        id: toastId,
+      })
+    }
+    invalidateVendorLists(queryClient)
+    setBulkDeleting(false)
+    setOpen(false)
+    if (failed === 0) {
+      toast.success(
+        `Deleted ${done} record${done === 1 ? "" : "s"}.`,
+        { id: toastId },
+      )
+    } else if (done === 0) {
+      toast.error(`Delete failed for all ${bulkIds.length} records.`, {
+        id: toastId,
+      })
+    } else {
+      toast.error(`Deleted ${done}, failed ${failed}.`, { id: toastId })
+    }
+  }
+
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:border-destructive cursor-pointer"
-          disabled={disabled || deleteMutation.isPending}
-          title="Delete vendor GST details"
-        >
-          {deleteMutation.isPending ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <Trash2 className="size-3.5" />
-          )}
-          Delete Details
-        </Button>
-      </AlertDialogTrigger>
-
-      <AlertDialogContent className="max-w-md sm:rounded-2xl">
-        <AlertDialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-              <AlertTriangle className="size-5" />
-            </div>
-            <div>
-              <AlertDialogTitle>Delete Vendor GST Details?</AlertDialogTitle>
-              <AlertDialogDescription className="text-xs text-muted-foreground mt-1">
-                Endpoint: <code className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded">DELETE /delete-vendor-gst-details</code>
-              </AlertDialogDescription>
-            </div>
-          </div>
-        </AlertDialogHeader>
-
-        <div className="py-2 text-sm text-foreground/80">
-          <p>
-            Are you sure you want to execute <strong className="text-foreground">DELETE /delete-vendor-gst-details</strong>?
-          </p>
-          <p className="mt-2 text-xs text-muted-foreground">
-            This API call will request the server to delete vendor GST details. This action cannot be undone.
-          </p>
-        </div>
-
-        <AlertDialogFooter>
-          <AlertDialogCancel
-            disabled={deleteMutation.isPending}
-            onClick={() => setOpen(false)}
-          >
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction
-            disabled={deleteMutation.isPending}
-            onClick={handleConfirmDelete}
-            className="cursor-pointer"
+        {isRowMode ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 size-8 cursor-pointer"
+            disabled={disabled || pending}
+            title={`Delete details row #${initialId}`}
+            onClick={(e) => {
+              // Prevent table row click navigation
+              e.stopPropagation()
+            }}
           >
             {deleteMutation.isPending ? (
-              <Loader2 className="size-3.5 animate-spin mr-1" />
-            ) : null}
-            Yes, Delete
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="size-3.5" />
+            )}
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="hover:text-destructive hover:border-destructive/40"
+            disabled={disabled || pending || bulkIds.length === 0}
+            title={
+              bulkIds.length === 0
+                ? "Nothing to delete"
+                : `Delete ${bulkIds.length} records`
+            }
+          >
+            {bulkDeleting ? (
+              <Loader2 className="size-3 animate-spin" />
+            ) : (
+              <Trash2 className="size-3" />
+            )}
+            {bulkDeleting
+              ? "Deleting…"
+              : `Delete${bulkIds.length > 0 ? ` (${bulkIds.length})` : ""}`}
+          </Button>
+        )}
+      </AlertDialogTrigger>
+
+      <AlertDialogContent
+        onClick={(e) => e.stopPropagation()}
+        className="sm:max-w-sm"
+      >
+        <AlertDialogHeader>
+          <AlertDialogTitle className="break-words">
+            {isRowMode
+              ? partyName
+                ? `Delete “${partyName}”?`
+                : `Delete record #${initialId}?`
+              : `Delete ${bulkIds.length} records?`}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {isRowMode ? (
+              <>
+                Record <span className="font-mono font-medium">#{initialId}</span> will
+                be permanently removed from the server. This action cannot be
+                undone.
+              </>
+            ) : (
+              <>
+                {bulkIds.length} line-item record
+                {bulkIds.length === 1 ? "" : "s"} will be permanently removed
+                from the server. This action cannot be undone.
+              </>
+            )}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={pending}
+            onClick={isRowMode ? handleRowConfirm : handleBulkConfirm}
+          >
+            {pending && <Loader2 className="size-3.5 animate-spin" />}
+            {pending
+              ? "Deleting…"
+              : isRowMode
+                ? "Delete"
+                : `Delete ${bulkIds.length}`}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   )
 }
+
+/** Alias for header/toolbar usage */
+export const BulkDeleteVendorGstDetailsButton = DeleteVendorGstDetailsButton

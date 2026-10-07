@@ -76,17 +76,16 @@ export async function uploadVendorGstDetailsFile(
 /**
  * `DELETE delete-vendor-gst-details` — remove one party-details row.
  *
- * WARNING: currently broken server-side — the controller calls
- * `Model::delete()` statically, so every variant returns HTTP 500
- * (`Non-static method … Model::delete() cannot be called statically`,
- * GSTController.php:317). Kept here so the UI can adopt it the moment the
- * backend is fixed; callers should surface the error via
- * `getApiErrorMessage`. The `id` is sent both as a query param and in the
- * JSON body since the collection leaves the binding unspecified.
+ * Verified live: `id` is accepted as a query param and/or JSON body
+ * (`?id=` alone, `{id}` body alone, or both all return HTTP 200
+ * `{code: 200, message: "Vendor GST Details deleted successfully."}`).
+ * Both are sent so the call works regardless of which one the backend
+ * reads. NOTE: the backend returns 200 even for unknown ids, so callers
+ * should refetch the list after delete (see `useDeleteVendorGstDetails`).
  */
 export async function deleteVendorGstDetails(
   id?: number | string,
-): Promise<unknown> {
+): Promise<{ code?: number; message?: string }> {
   const { data } = await apiClient.delete("/delete-vendor-gst-details", {
     params: id !== undefined ? { id } : undefined,
     data: id !== undefined ? { id } : undefined,

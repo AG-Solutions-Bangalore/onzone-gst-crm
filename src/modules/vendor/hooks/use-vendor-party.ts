@@ -39,7 +39,11 @@ export function useVendorGstDetailsList(params?: PaginationParams) {
 /** Party/brand rows for one GSTIN, looked up from the cached list. */
 export function useVendorPartyRows(gstin: string | undefined) {
   const detailsQuery = useVendorGstDetailsList()
-  const rows = detailsQuery.data?.filter((r) => r.vendor_gst === gstin) ?? []
+  const cleanGstin = gstin?.trim().toUpperCase()
+  const rows =
+    detailsQuery.data?.filter(
+      (r) => r.vendor_gst?.trim().toUpperCase() === cleanGstin,
+    ) ?? []
   return { ...detailsQuery, rows }
 }
 
@@ -129,8 +133,8 @@ export function useUploadVendorGstDetailsFile() {
 }
 
 /**
- * `DELETE delete-vendor-gst-details` — currently 500s server-side
- * (see api docs); surfaces the backend error via `getApiErrorMessage`.
+ * `DELETE delete-vendor-gst-details` — delete one party-details row by `id`,
+ * then invalidate the vendor lists so the table refreshes.
  */
 export function useDeleteVendorGstDetails() {
   const queryClient = useQueryClient()

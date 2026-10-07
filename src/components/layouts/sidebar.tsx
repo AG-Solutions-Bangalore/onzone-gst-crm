@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
-import { LayoutDashboard, LogOut, Store, X } from "lucide-react"
+import { FileSpreadsheet, Layers, LayoutDashboard, LogOut, RefreshCw, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button.tsx"
 import { cn } from "@/lib/utils.ts"
@@ -12,8 +12,12 @@ const GROUPS = [
     items: [{ to: "/", label: "Dashboard", end: true, icon: LayoutDashboard }],
   },
   {
-    label: "Registry",
-    items: [{ to: "/vendors", label: "Vendors", end: false, icon: Store }],
+    label: "GST Management",
+    items: [
+      { to: "/vendor-gst", label: "Vendor GST", end: false, icon: FileSpreadsheet },
+      { to: "/vendor-gst-details", label: "Vendor GST Details", end: false, icon: Layers },
+      { to: "/sync-details", label: "Sync Details", end: false, icon: RefreshCw },
+    ],
   },
 ]
 

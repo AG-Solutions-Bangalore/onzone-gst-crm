@@ -4,67 +4,95 @@ import { FileDown, Loader2 } from "lucide-react"
 import * as XLSX from "xlsx"
 
 import { Button } from "@/components/ui/button.tsx"
-import type { VendorGstDetails } from "@/modules/vendor/types/vendor.types.ts"
+import type {
+  VendorGstDetails,
+  VendorPartyDetails,
+} from "@/modules/vendor/types/vendor.types.ts"
 
-function text(value: unknown): string {
-  if (value === null || value === undefined || value === "") return "—"
-  if (typeof value === "boolean") return value ? "Yes" : "No"
+function cell(value: unknown): string {
+  if (value === null || value === undefined) return ""
   return String(value)
 }
 
-/** Downloads one vendor's full GST profile as an `.xlsx` file. */
+/**
+ * Blank `vendor_gst_details.xlsx` import template columns
+ * (sheet `Sheet1`), in template order.
+ */
+const VENDOR_GST_DETAILS_TEMPLATE_HEADERS = [
+  "vendor_gst",
+  "party_name",
+  "brand",
+  "amount",
+  "gst_amount",
+  "address",
+  "town",
+  "district",
+  "belt",
+] as const
+
+/**
+ * Downloads one vendor's party/brand line items as an `.xlsx` file in the
+ * exact `vendor_gst_details.xlsx` import-template shape so the file can be
+ * edited and re-uploaded via "Import Details (.xlsx)".
+ */
 export function ExportVendorDetailsButton({
   vendor,
+  partyRows,
 }: {
   vendor: VendorGstDetails
+  partyRows?: VendorPartyDetails[]
 }) {
   const [exporting, setExporting] = React.useState(false)
 
   function handleExport() {
     setExporting(true)
     try {
-      const rows: [string, string][] = [
-        ["Field", "Value"],
-        ["GSTIN", text(vendor.vendor_gst)],
-        ["Business name", text(vendor.business_name)],
-        ["Legal name", text(vendor.legal_name)],
-        ["PAN", text(vendor.pan_number)],
-        ["Taxpayer type", text(vendor.taxpayer_type)],
-        ["Constitution", text(vendor.constitution_of_business)],
-        ["GSTIN status", text(vendor.gstin_status)],
-        ["Date of registration", text(vendor.date_of_registration)],
-        ["Date of cancellation", text(vendor.date_of_cancellation)],
-        ["Nature of business", text(vendor.nature_of_business)],
-        ["Business activities", text(vendor.nature_bus_activities)],
-        [
-          "Core activity",
-          text(vendor.nature_of_core_business_activity_description),
-        ],
-        ["Promoters", text(vendor.promoters)],
-        ["Address", text(vendor.address)],
-        ["Email", text(vendor.email)],
-        ["Mobile", text(vendor.mobile)],
-        ["Annual turnover", text(vendor.annual_turnover)],
-        ["Turnover FY", text(vendor.annual_turnover_fy)],
-        ["Aadhaar validation", text(vendor.aadhaar_validation)],
-        [
-          "E-invoice",
-          vendor.einvoice_status === null || vendor.einvoice_status === undefined
-            ? "—"
-            : vendor.einvoice_status
-              ? "Enabled"
-              : "Not enabled",
-        ],
-        ["Field visit conducted", text(vendor.field_visit_conducted)],
-        ["Center jurisdiction", text(vendor.center_jurisdiction)],
-        ["State jurisdiction", text(vendor.state_jurisdiction)],
+      const items =
+        partyRows && partyRows.length > 0
+          ? partyRows
+          : ([
+              {
+                vendor_gst: vendor.vendor_gst,
+                party_name: null,
+                brand: null,
+                amount: null,
+                gst_amount: null,
+                address: null,
+                town: null,
+                district: null,
+                belt: null,
+              },
+            ] as VendorPartyDetails[])
+      const data: string[][] = [
+        [...VENDOR_GST_DETAILS_TEMPLATE_HEADERS],
+        ...items.map((r) => [
+          r.vendor_gst,
+          cell(r.party_name),
+          cell(r.brand),
+          cell(r.amount),
+          cell(r.gst_amount),
+          cell(r.address),
+          cell(r.town),
+          cell(r.district),
+          cell(r.belt),
+        ]),
       ]
-      const worksheet = XLSX.utils.aoa_to_sheet(rows)
-      worksheet["!cols"] = [{ wch: 24 }, { wch: 70 }]
+      const worksheet = XLSX.utils.aoa_to_sheet(data)
+      worksheet["!cols"] = [
+        { wch: 18 }, // vendor_gst
+        { wch: 28 }, // party_name
+        { wch: 18 }, // brand
+        { wch: 16 }, // amount
+        { wch: 16 }, // gst_amount
+        { wch: 45 }, // address
+        { wch: 20 }, // town
+        { wch: 20 }, // district
+        { wch: 20 }, // belt
+      ]
       const workbook = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Vendor details")
-      XLSX.writeFile(workbook, `vendor-${vendor.vendor_gst}.xlsx`)
-      toast.success("Vendor profile exported to Excel.")
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1")
+      XLSX.writeFile(workbook, `vendor_gst_details-${vendor.vendor_gst}.xlsx`)
+      toast.success(`Exported ${items.length} details to Excel.`)
     } catch {
       toast.error("Excel export failed. Try again.")
     } finally {

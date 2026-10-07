@@ -15,6 +15,25 @@ function cell(value: unknown): string {
   return String(value)
 }
 
+/** `vendor_gst.xlsx` import template columns (sheet `Sheet1`). */
+const VENDOR_GST_TEMPLATE_HEADERS = ["vendor_gst", "vendor_gst_tag"] as const
+
+/**
+ * Blank `vendor_gst_details.xlsx` import template columns
+ * (sheet `Sheet1`), in template order.
+ */
+const VENDOR_GST_DETAILS_TEMPLATE_HEADERS = [
+  "vendor_gst",
+  "party_name",
+  "brand",
+  "amount",
+  "gst_amount",
+  "address",
+  "town",
+  "district",
+  "belt",
+] as const
+
 /** Downloads the given vendor rows as an `.xlsx` file. */
 export function ExportVendorsButton({
   rows,
@@ -32,43 +51,21 @@ export function ExportVendorsButton({
     }
     setExporting(true)
     try {
-      const sheetData = rows.map((r) => ({
-        GSTIN: r.vendor_gst,
-        "Business name": cell(r.business_name),
-        "Legal name": cell(r.legal_name),
-        PAN: cell(r.pan_number),
-        "Taxpayer type": cell(r.taxpayer_type),
-        Constitution: cell(r.constitution_of_business),
-        "GSTIN status": cell(r.gstin_status),
-        "Date of registration": cell(r.date_of_registration),
-        Mobile: cell(r.mobile),
-        Email: cell(r.email),
-        Address: cell(r.address),
-        "Annual turnover": cell(r.annual_turnover),
-        "Turnover FY": cell(r.annual_turnover_fy),
-        "Fetch status": cell(r.fetchStatus),
-      }))
-      const worksheet = XLSX.utils.json_to_sheet(sheetData)
+      // Same shape as the `vendor_gst.xlsx` import template (profiles carry
+      // no tag, so that column stays blank for the user to fill before any
+      // re-upload via "Import GSTIN (.xlsx)").
+      const data: string[][] = [
+        [...VENDOR_GST_TEMPLATE_HEADERS],
+        ...rows.map((r) => [r.vendor_gst, ""]),
+      ]
+      const worksheet = XLSX.utils.aoa_to_sheet(data)
       worksheet["!cols"] = [
-        { wch: 18 }, // GSTIN
-        { wch: 28 }, // Business name
-        { wch: 28 }, // Legal name
-        { wch: 13 }, // PAN
-        { wch: 14 }, // Taxpayer type
-        { wch: 16 }, // Constitution
-        { wch: 14 }, // GSTIN status
-        { wch: 14 }, // Date of registration
-        { wch: 14 }, // Mobile
-        { wch: 26 }, // Email
-        { wch: 50 }, // Address
-        { wch: 24 }, // Annual turnover
-        { wch: 12 }, // Turnover FY
-        { wch: 12 }, // Fetch status
+        { wch: 20 }, // vendor_gst
+        { wch: 20 }, // vendor_gst_tag
       ]
       const workbook = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Vendors")
-      const stamp = new Date().toISOString().slice(0, 10)
-      XLSX.writeFile(workbook, `vendors-${stamp}.xlsx`)
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1")
+      XLSX.writeFile(workbook, "vendor_gst.xlsx")
       toast.success(`Exported ${rows.length} vendors to Excel.`)
     } catch {
       toast.error("Excel export failed. Try again.")
@@ -111,33 +108,37 @@ export function ExportGstDetailsListButton({
     }
     setExporting(true)
     try {
-      const sheetData = items.map((r) => ({
-        GSTIN: r.vendor_gst,
-        "Party name": cell(r.party_name),
-        Brand: cell(r.brand),
-        Amount: cell(r.amount),
-        "GST amount": cell(r.gst_amount),
-        Town: cell(r.town),
-        District: cell(r.district),
-        Belt: cell(r.belt),
-        Address: cell(r.address),
-      }))
-      const worksheet = XLSX.utils.json_to_sheet(sheetData)
+      // Same shape as the `vendor_gst_details.xlsx` import template so the
+      // file can be edited and re-uploaded via "Import Details (.xlsx)".
+      const data: string[][] = [
+        [...VENDOR_GST_DETAILS_TEMPLATE_HEADERS],
+        ...items.map((r) => [
+          r.vendor_gst,
+          cell(r.party_name),
+          cell(r.brand),
+          cell(r.amount),
+          cell(r.gst_amount),
+          cell(r.address),
+          cell(r.town),
+          cell(r.district),
+          cell(r.belt),
+        ]),
+      ]
+      const worksheet = XLSX.utils.aoa_to_sheet(data)
       worksheet["!cols"] = [
-        { wch: 18 }, // GSTIN
-        { wch: 28 }, // Party name
-        { wch: 18 }, // Brand
-        { wch: 16 }, // Amount
-        { wch: 16 }, // GST amount
-        { wch: 20 }, // Town
-        { wch: 20 }, // District
-        { wch: 20 }, // Belt
-        { wch: 45 }, // Address
+        { wch: 18 }, // vendor_gst
+        { wch: 28 }, // party_name
+        { wch: 18 }, // brand
+        { wch: 16 }, // amount
+        { wch: 16 }, // gst_amount
+        { wch: 45 }, // address
+        { wch: 20 }, // town
+        { wch: 20 }, // district
+        { wch: 20 }, // belt
       ]
       const workbook = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(workbook, worksheet, "GST Details")
-      const stamp = new Date().toISOString().slice(0, 10)
-      XLSX.writeFile(workbook, `gst-details-${stamp}.xlsx`)
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1")
+      XLSX.writeFile(workbook, "vendor_gst_details.xlsx")
       toast.success(`Exported ${items.length} details to Excel.`)
     } catch {
       toast.error("Excel export failed. Try again.")

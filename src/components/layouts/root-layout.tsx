@@ -9,8 +9,11 @@ import { AuthSessionWatcher, useAuth } from "@/modules/auth/index.ts"
 
 function pageTitle(pathname: string): string {
   if (pathname === "/") return "Dashboard"
-  if (pathname === "/vendors") return "Vendors"
-  if (pathname.startsWith("/vendors/")) return "Vendor details"
+  if (pathname === "/vendor-gst") return "Vendor GST"
+  if (pathname === "/vendor-gst-details") return "Vendor GST Details"
+  if (pathname === "/sync-details") return "Sync Details"
+  if (pathname.startsWith("/sync-details/") || pathname.startsWith("/vendors/")) return "Sync Details Profile"
+  if (pathname === "/vendors") return "Vendor GST"
   return "OnZone"
 }
 

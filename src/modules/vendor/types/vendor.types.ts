@@ -9,7 +9,7 @@
  *  - `GET fetch-vendor-gst-sync-details-by-id/{id}` → profile + party rows
  *  - `GET fetch-vendor-gst-details-list` → party/brand sales rows (N per GSTIN)
  *  - `POST upload-vendor-gst-file` / `upload-vendor-gst-details-file` → imports
- *  - `DELETE delete-vendor-gst-details` → broken server-side (500, see api)
+  *  - `DELETE delete-vendor-gst-details` → delete one party-details row by id
  */
 
 /** `GET fetch-vendor-gst-list` item. */

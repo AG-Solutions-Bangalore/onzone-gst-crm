@@ -13,7 +13,7 @@ export function gstinStatusVariant(
   if (!status) return "default"
   if (status === "Active") return "success"
   if (status.toLowerCase().includes("cancel")) return "destructive"
-  if (status === "Suspended") return "accent"
+  if (status === "Suspended" || status.toLowerCase().includes("unsync")) return "accent"
   return "default"
 }
 
@@ -27,8 +27,8 @@ function GstinLink({ gstin, sub }: { gstin: string; sub?: string | null }) {
   return (
     <div className="flex flex-col gap-0.5">
       <Link
-        to={`/vendors/${gstin}`}
-        className="hover:text-tertiary font-mono text-[13px] font-medium whitespace-normal break-all"
+        to={`/sync-details/${gstin}`}
+        className="hover:text-primary font-mono text-[13px] font-medium whitespace-normal break-all"
       >
         {gstin}
       </Link>

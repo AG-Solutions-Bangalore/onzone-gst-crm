@@ -7,6 +7,7 @@
 export {
   useUploadVendorGstFile,
   useVendorGstList,
+  useVendorGstRegistryView,
   useVendorGstTags,
 } from "@/modules/vendor/hooks/use-vendor-registry.ts"
 export {
