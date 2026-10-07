@@ -2,7 +2,8 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { Link } from "react-router-dom"
 import { Badge } from "@/components/ui/badge.tsx"
 import type {
-  VendorGstDetails,
+  VendorGstSyncDetails,
+  VendorPartyDetails,
   VendorTableRow,
 } from "@/modules/vendor/types/vendor.types.ts"
 
@@ -88,7 +89,7 @@ export const vendorTableColumns: ColumnDef<VendorTableRow>[] = [
 ]
 
 /** Compact table for vendors needing attention (non-active GSTIN). */
-export const attentionColumns: ColumnDef<VendorGstDetails>[] = [
+export const attentionColumns: ColumnDef<VendorGstSyncDetails>[] = [
   {
     accessorKey: "vendor_gst",
     header: "GSTIN",
@@ -111,3 +112,72 @@ export const attentionColumns: ColumnDef<VendorGstDetails>[] = [
     ),
   },
 ]
+
+function formatCurrency(val: unknown): string {
+  if (val === null || val === undefined || val === "") return "—"
+  const num = Number(val)
+  if (isNaN(num)) return String(val)
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 2,
+  }).format(num)
+}
+
+/** Table columns for party/brand rows (`fetch-vendor-gst-details-list`). */
+export const gstDetailsTableColumns: ColumnDef<VendorPartyDetails>[] = [
+  {
+    accessorKey: "vendor_gst",
+    header: "GSTIN",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <GstinLink
+        gstin={row.original.vendor_gst}
+        sub={row.original.party_name}
+      />
+    ),
+  },
+  {
+    accessorKey: "brand",
+    header: "Brand",
+    enableSorting: true,
+    cell: ({ row }) => row.original.brand || "—",
+  },
+  {
+    accessorKey: "amount",
+    header: "Amount",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="font-mono text-sm tabular-nums">
+        {formatCurrency(row.original.amount)}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "gst_amount",
+    header: "GST Amount",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="font-mono text-sm tabular-nums">
+        {formatCurrency(row.original.gst_amount)}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "town",
+    header: "Town / District",
+    enableSorting: true,
+    cell: ({ row }) => {
+      const parts = [row.original.town, row.original.district].filter(Boolean)
+      return parts.length ? parts.join(", ") : "—"
+    },
+  },
+  {
+    accessorKey: "belt",
+    header: "Belt",
+    enableSorting: true,
+    cell: ({ row }) => row.original.belt || "—",
+  },
+]
+
+

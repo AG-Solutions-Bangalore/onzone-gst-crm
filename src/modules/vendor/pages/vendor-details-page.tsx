@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useSearchParams } from "react-router-dom"
 import toast from "react-hot-toast"
 import { ArrowLeft, Check, Copy } from "lucide-react"
 
@@ -12,9 +12,17 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx"
 import { Skeleton } from "@/components/ui/skeleton.tsx"
-import { gstinStatusVariant } from "@/modules/vendor/components/vendor-columns.tsx"
+import { DataTable } from "@/components/data-table.tsx"
+import {
+  gstDetailsTableColumns,
+  gstinStatusVariant,
+} from "@/modules/vendor/components/vendor-columns.tsx"
 import { ExportVendorDetailsButton } from "@/modules/vendor/components/export-vendor-details-button.tsx"
-import { useVendorGstDetails } from "@/modules/vendor/hooks/use-vendors.ts"
+import {
+  useVendorGstDetails,
+  useVendorGstSyncDetailsById,
+  useVendorPartyRows,
+} from "@/modules/vendor/hooks/use-vendors.ts"
 
 function Field({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null
@@ -29,8 +37,35 @@ function Field({ label, value }: { label: string; value?: string | null }) {
 /** `/vendors/:gstin` — full GST profile for one vendor. */
 export function VendorDetailsPage() {
   const { gstin } = useParams()
+  const [searchParams] = useSearchParams()
   const { vendor, isLoading, isError, refetch } = useVendorGstDetails(gstin)
+  // Party/brand rows: prefer the by-id endpoint (`{data, gstdetails}`),
+  // fall back to the cached party list filtered by GSTIN.
+  const byIdQuery = useVendorGstSyncDetailsById(vendor?.id)
+  const partyRowsQuery = useVendorPartyRows(gstin)
+  const partyRows =
+    (byIdQuery.data?.gstdetails?.length ?? 0) > 0
+      ? (byIdQuery.data?.gstdetails ?? [])
+      : (partyRowsQuery.rows ?? [])
   const [copied, setCopied] = React.useState(false)
+
+  // Back link keeps the originating tab (?tab=details or ?view=details or sessionStorage)
+  // so the registry restores it instead of resetting to Synced Vendors.
+  const tabParam = searchParams.get("tab") || searchParams.get("view")
+  const backTo = React.useMemo(() => {
+    if (tabParam === "details" || tabParam === "synced") {
+      return `/vendors?tab=${tabParam}`
+    }
+    try {
+      const stored = sessionStorage.getItem("onzone.vendors.activeTab")
+      if (stored === "details" || stored === "synced") {
+        return `/vendors?tab=${stored}`
+      }
+    } catch {
+      // ignore
+    }
+    return "/vendors"
+  }, [tabParam])
 
   async function copyGstin() {
     if (!vendor) return
@@ -61,7 +96,7 @@ export function VendorDetailsPage() {
     return (
       <div className="flex flex-col items-start gap-3">
         <Button variant="secondary" size="sm" asChild>
-          <Link to="/vendors">
+          <Link to={backTo}>
             <ArrowLeft className="size-4" /> Vendors
           </Link>
         </Button>
@@ -81,7 +116,7 @@ export function VendorDetailsPage() {
   return (
     <div className="flex flex-col gap-4">
       <Button variant="tertiary" size="inline" className="w-fit" asChild>
-        <Link to="/vendors">
+        <Link to={backTo}>
           <ArrowLeft className="size-4" /> Vendors
         </Link>
       </Button>
@@ -198,6 +233,26 @@ export function VendorDetailsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {partyRows.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              Party & brand details ({partyRows.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              columns={gstDetailsTableColumns}
+              data={partyRows}
+              searchPlaceholder="Search party, brand…"
+              pageSize={10}
+              emptyMessage="No party details for this GSTIN."
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
+

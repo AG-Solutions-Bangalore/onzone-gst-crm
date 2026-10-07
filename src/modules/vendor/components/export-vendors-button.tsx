@@ -4,7 +4,10 @@ import { FileDown, Loader2 } from "lucide-react"
 import * as XLSX from "xlsx"
 
 import { Button } from "@/components/ui/button.tsx"
-import type { VendorTableRow } from "@/modules/vendor/types/vendor.types.ts"
+import type {
+  VendorPartyDetails,
+  VendorTableRow,
+} from "@/modules/vendor/types/vendor.types.ts"
 
 function cell(value: unknown): string {
   if (value === null || value === undefined) return ""
@@ -90,3 +93,73 @@ export function ExportVendorsButton({
     </Button>
   )
 }
+
+/** Downloads uploaded GST details line items as an `.xlsx` file. */
+export function ExportGstDetailsListButton({
+  items,
+  disabled,
+}: {
+  items: VendorPartyDetails[]
+  disabled?: boolean
+}) {
+  const [exporting, setExporting] = React.useState(false)
+
+  function handleExport() {
+    if (!items.length) {
+      toast.error("Nothing to export.")
+      return
+    }
+    setExporting(true)
+    try {
+      const sheetData = items.map((r) => ({
+        GSTIN: r.vendor_gst,
+        "Party name": cell(r.party_name),
+        Brand: cell(r.brand),
+        Amount: cell(r.amount),
+        "GST amount": cell(r.gst_amount),
+        Town: cell(r.town),
+        District: cell(r.district),
+        Belt: cell(r.belt),
+        Address: cell(r.address),
+      }))
+      const worksheet = XLSX.utils.json_to_sheet(sheetData)
+      worksheet["!cols"] = [
+        { wch: 18 }, // GSTIN
+        { wch: 28 }, // Party name
+        { wch: 18 }, // Brand
+        { wch: 16 }, // Amount
+        { wch: 16 }, // GST amount
+        { wch: 20 }, // Town
+        { wch: 20 }, // District
+        { wch: 20 }, // Belt
+        { wch: 45 }, // Address
+      ]
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, "GST Details")
+      const stamp = new Date().toISOString().slice(0, 10)
+      XLSX.writeFile(workbook, `gst-details-${stamp}.xlsx`)
+      toast.success(`Exported ${items.length} details to Excel.`)
+    } catch {
+      toast.error("Excel export failed. Try again.")
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  return (
+    <Button
+      variant="secondary"
+      size="sm"
+      onClick={handleExport}
+      disabled={disabled || exporting || items.length === 0}
+    >
+      {exporting ? (
+        <Loader2 className="size-3 animate-spin" />
+      ) : (
+        <FileDown className="size-3" />
+      )}
+      {exporting ? "Exporting…" : "Excel"}
+    </Button>
+  )
+}
+

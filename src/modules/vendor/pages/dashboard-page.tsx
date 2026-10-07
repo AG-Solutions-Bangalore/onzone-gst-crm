@@ -23,7 +23,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton.tsx"
 import { attentionColumns } from "@/modules/vendor/components/vendor-columns.tsx"
 import { StatCard } from "@/modules/vendor/components/stat-card.tsx"
-import { useVendorGstDetailsList } from "@/modules/vendor/hooks/use-vendors.ts"
+import { useVendorGstSyncDetailsList } from "@/modules/vendor/hooks/use-vendors.ts"
 
 function countBy<T>(items: T[], key: (item: T) => string): [string, number][] {
   const map = new Map<string, number>()
@@ -75,7 +75,7 @@ function DistributionBars({
 
 /** `/` — vendor GST overview: KPIs, breakdowns, attention list. */
 export function DashboardPage() {
-  const detailsQuery = useVendorGstDetailsList()
+  const detailsQuery = useVendorGstSyncDetailsList()
   const navigate = useNavigate()
   const vendors = React.useMemo(
     () => detailsQuery.data ?? [],
