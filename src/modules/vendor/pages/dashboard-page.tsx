@@ -23,7 +23,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton.tsx"
 import { attentionColumns } from "@/modules/vendor/components/vendor-columns.tsx"
 import { StatCard } from "@/modules/vendor/components/stat-card.tsx"
-import { useVendorGstDetailsList } from "@/modules/vendor/hooks/use-vendors.ts"
+import { useVendorGstSyncDetailsList } from "@/modules/vendor/hooks/use-vendors.ts"
 
 function countBy<T>(items: T[], key: (item: T) => string): [string, number][] {
   const map = new Map<string, number>()
@@ -75,7 +75,7 @@ function DistributionBars({
 
 /** `/` — vendor GST overview: KPIs, breakdowns, attention list. */
 export function DashboardPage() {
-  const detailsQuery = useVendorGstDetailsList()
+  const detailsQuery = useVendorGstSyncDetailsList()
   const navigate = useNavigate()
   const vendors = React.useMemo(
     () => detailsQuery.data ?? [],
@@ -197,7 +197,7 @@ export function DashboardPage() {
             value={String(stats.total)}
             hint="tracked GSTINs"
             icon={Building2}
-            to="/vendors"
+            to="/sync-details"
           />
         </div>
         <div className="col-span-12 sm:col-span-6 lg:col-span-3">
@@ -207,7 +207,7 @@ export function DashboardPage() {
             hint="filing-ready taxpayers"
             icon={BadgeCheck}
             tone="success"
-            to="/vendors?status=active"
+            to="/sync-details?status=active"
           />
         </div>
         <div className="col-span-12 sm:col-span-6 lg:col-span-3">
@@ -217,7 +217,7 @@ export function DashboardPage() {
             hint="suspended / cancelled"
             icon={AlertTriangle}
             tone={stats.attention > 0 ? "error" : "default"}
-            to="/vendors?status=attention"
+            to="/sync-details?status=attention"
           />
         </div>
         <div className="col-span-12 sm:col-span-6 lg:col-span-3">
@@ -227,7 +227,7 @@ export function DashboardPage() {
             hint="of total vendors"
             icon={Receipt}
             tone="accent"
-            to="/vendors?type=Composition"
+            to="/sync-details?type=Composition"
           />
         </div>
       </div>
@@ -244,7 +244,7 @@ export function DashboardPage() {
               </div>
               {attentionVendors.length > 0 && (
                 <Button variant="link" className="h-auto p-0" asChild>
-                  <Link to="/vendors?status=attention">
+                  <Link to="/sync-details?status=attention">
                     View all <ChevronRight className="size-4" />
                   </Link>
                 </Button>
@@ -257,7 +257,7 @@ export function DashboardPage() {
               data={attentionVendors}
               pageSize={5}
               emptyMessage="All clear — every GSTIN is active."
-              onRowClick={(row) => navigate(`/vendors/${row.vendor_gst}`)}
+              onRowClick={(row) => navigate(`/sync-details/${row.vendor_gst}`)}
             />
           </CardContent>
         </Card>
@@ -289,7 +289,7 @@ export function DashboardPage() {
           {recentVendors.map((v) => (
             <Link
               key={v.vendor_gst}
-              to={`/vendors/${v.vendor_gst}`}
+              to={`/sync-details/${v.vendor_gst}`}
               className="hover:bg-surface-low flex items-center justify-between gap-3 rounded-md px-2 py-2.5 transition-colors"
             >
               <div className="min-w-0">

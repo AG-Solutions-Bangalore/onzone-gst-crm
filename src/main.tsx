@@ -9,11 +9,14 @@ import {
   LoginPage,
   RequireAuth,
 } from "@/modules/auth/index.ts"
+
+import { DashboardPage } from "@/modules/vendor/index.ts"
+import { VendorGstPage } from "@/modules/vendor-gst/index.ts"
+import { VendorGstDetailsPage } from "@/modules/vendor-gst-details/index.ts"
 import {
-  DashboardPage,
-  VendorDetailsPage,
-  VendorsPage,
-} from "@/modules/vendor/index.ts"
+  SyncDetailsPage,
+  SyncDetailProfilePage,
+} from "@/modules/sync-details/index.ts"
 import { NotFoundPage } from "@/pages/not-found.tsx"
 
 const router = createBrowserRouter([
@@ -28,8 +31,13 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <DashboardPage /> },
-      { path: "vendors", element: <VendorsPage /> },
-      { path: "vendors/:gstin", element: <VendorDetailsPage /> },
+      { path: "vendor-gst", element: <VendorGstPage /> },
+      { path: "vendor-gst-details", element: <VendorGstDetailsPage /> },
+      { path: "sync-details", element: <SyncDetailsPage /> },
+      { path: "sync-details/:gstin", element: <SyncDetailProfilePage /> },
+      // Backward compatibility aliases
+      { path: "vendors", element: <VendorGstPage /> },
+      { path: "vendors/:gstin", element: <SyncDetailProfilePage /> },
     ],
   },
   { path: "*", element: <NotFoundPage /> },
