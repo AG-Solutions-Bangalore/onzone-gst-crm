@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 
@@ -61,12 +61,20 @@ export function LoginForm() {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label
-          htmlFor="login-password"
-          className="text-sm leading-5 font-medium"
-        >
-          Password
-        </label>
+        <div className="flex items-center justify-between">
+          <label
+            htmlFor="login-password"
+            className="text-sm leading-5 font-medium"
+          >
+            Password
+          </label>
+          <Link
+            to="/forgot-password"
+            className="text-primary text-xs leading-4 hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
         <div className="relative">
           <Input
             id="login-password"

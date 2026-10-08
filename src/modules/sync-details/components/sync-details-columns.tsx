@@ -42,6 +42,19 @@ function CopyGstinBtn({ gstin }: { gstin: string }) {
 
 export const syncDetailsColumns: ColumnDef<VendorTableRow>[] = [
   {
+    id: "slno",
+    header: "SlNo",
+    enableSorting: false,
+    cell: ({ row, table }) => {
+      const { pageIndex, pageSize } = table.getState().pagination
+      return (
+        <span className="font-mono text-xs text-muted-foreground tabular-nums">
+          {pageIndex * pageSize + row.index + 1}
+        </span>
+      )
+    },
+  },
+  {
     accessorKey: "vendor_gst",
     header: "GSTIN",
     enableSorting: true,

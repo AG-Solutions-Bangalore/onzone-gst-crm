@@ -161,12 +161,15 @@ export function DataTable<TData, TValue>({
         </div>
       )}
 
-      <Table>
+      <Table className="table-fixed min-w-[700px] [&_td]:overflow-hidden [&_td]:text-ellipsis [&_th]:overflow-hidden [&_th]:text-ellipsis">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent">
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  className={header.column.id === "slno" ? "w-14" : undefined}
+                >
                   {header.isPlaceholder ? null : header.column.getCanSort() ? (
                     <button
                       type="button"
@@ -214,7 +217,10 @@ export function DataTable<TData, TValue>({
                 className={onRowClick ? "cursor-pointer" : undefined}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={cell.column.id === "slno" ? "w-14" : undefined}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

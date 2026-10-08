@@ -45,6 +45,19 @@ function GstinLink({ gstin, sub }: { gstin: string; sub?: string | null }) {
 /** Vendors registry table (details + fetch status). */
 export const vendorTableColumns: ColumnDef<VendorTableRow>[] = [
   {
+    id: "slno",
+    header: "SlNo",
+    enableSorting: false,
+    cell: ({ row, table }) => {
+      const { pageIndex, pageSize } = table.getState().pagination
+      return (
+        <span className="font-mono text-xs text-muted-foreground tabular-nums">
+          {pageIndex * pageSize + row.index + 1}
+        </span>
+      )
+    },
+  },
+  {
     accessorKey: "vendor_gst",
     header: "GSTIN",
     enableSorting: true,
@@ -92,6 +105,19 @@ export const vendorTableColumns: ColumnDef<VendorTableRow>[] = [
 /** Compact table for vendors needing attention (non-active GSTIN). */
 export const attentionColumns: ColumnDef<VendorGstSyncDetails>[] = [
   {
+    id: "slno",
+    header: "SlNo",
+    enableSorting: false,
+    cell: ({ row, table }) => {
+      const { pageIndex, pageSize } = table.getState().pagination
+      return (
+        <span className="font-mono text-xs text-muted-foreground tabular-nums">
+          {pageIndex * pageSize + row.index + 1}
+        </span>
+      )
+    },
+  },
+  {
     accessorKey: "vendor_gst",
     header: "GSTIN",
     enableSorting: true,
@@ -127,6 +153,19 @@ function formatCurrency(val: unknown): string {
 
 /** Table columns for party/brand rows (`fetch-vendor-gst-details-list`). */
 export const gstDetailsTableColumns: ColumnDef<VendorPartyDetails>[] = [
+  {
+    id: "slno",
+    header: "SlNo",
+    enableSorting: false,
+    cell: ({ row, table }) => {
+      const { pageIndex, pageSize } = table.getState().pagination
+      return (
+        <span className="font-mono text-xs text-muted-foreground tabular-nums">
+          {pageIndex * pageSize + row.index + 1}
+        </span>
+      )
+    },
+  },
   {
     accessorKey: "vendor_gst",
     header: "GSTIN",

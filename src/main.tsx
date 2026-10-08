@@ -6,6 +6,7 @@ import { RootLayout } from "@/components/layouts/root-layout.tsx"
 import { MainProvider } from "@/components/providers/mainProvider.tsx"
 import {
   AuthProvider,
+  ForgotPasswordPage,
   LoginPage,
   RequireAuth,
 } from "@/modules/auth/index.ts"
@@ -22,6 +23,7 @@ import { NotFoundPage } from "@/pages/not-found.tsx"
 const router = createBrowserRouter([
   // Public — login first, then the app.
   { path: "/login", element: <LoginPage /> },
+  { path: "/forgot-password", element: <ForgotPasswordPage /> },
   {
     path: "/",
     element: (
