@@ -66,7 +66,8 @@ export const vendorGstTableColumns: ColumnDef<VendorGst>[] = [
         <div className="flex items-center gap-1.5">
           <Link
             to={`/sync-details/${gstin}`}
-            className="hover:text-primary font-mono text-[13px] font-medium transition-colors"
+            title={`View details for ${gstin}`}
+            className="text-info font-mono text-[13px] font-medium"
           >
             {gstin}
           </Link>

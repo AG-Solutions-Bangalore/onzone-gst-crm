@@ -28,7 +28,8 @@ function GstinLink({ gstin, sub }: { gstin: string; sub?: string | null }) {
     <div className="flex flex-col gap-0.5">
       <Link
         to={`/sync-details/${gstin}`}
-        className="hover:text-primary font-mono text-[13px] font-medium whitespace-normal break-all"
+        title={`View details for ${gstin}`}
+        className="text-info font-mono text-[13px] font-medium whitespace-normal break-all"
       >
         {gstin}
       </Link>
