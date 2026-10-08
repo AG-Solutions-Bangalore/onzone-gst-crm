@@ -1,10 +1,11 @@
+import * as React from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
-import { FileSpreadsheet, Layers, LayoutDashboard, LogOut, RefreshCw, X } from "lucide-react"
+import { FileSpreadsheet, KeyRound, Layers, LayoutDashboard, LogOut, RefreshCw, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button.tsx"
 import { cn } from "@/lib/utils.ts"
-import { useAuth } from "@/modules/auth/index.ts"
+import { ChangePasswordDialog, useAuth } from "@/modules/auth/index.ts"
 
 const GROUPS = [
   {
@@ -67,6 +68,7 @@ function SidebarNav({
 function SidebarUser({ collapsed }: { collapsed?: boolean }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [changeOpen, setChangeOpen] = React.useState(false)
 
   function handleLogout() {
     logout()
@@ -96,11 +98,26 @@ function SidebarUser({ collapsed }: { collapsed?: boolean }) {
     </Button>
   )
 
+  const changePasswordButton = (
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label="Change password"
+      title="Change password"
+      onClick={() => setChangeOpen(true)}
+      className="size-8 shrink-0"
+    >
+      <KeyRound className="size-4" />
+    </Button>
+  )
+
   if (collapsed) {
     return (
       <div className="border-outline-variant/60 flex flex-col items-center gap-2 border-t p-3">
         {avatar}
+        {changePasswordButton}
         {logoutButton}
+        <ChangePasswordDialog open={changeOpen} setOpen={setChangeOpen} />
       </div>
     )
   }
@@ -115,8 +132,10 @@ function SidebarUser({ collapsed }: { collapsed?: boolean }) {
             {user?.email ?? ""}
           </p>
         </div>
+        {changePasswordButton}
         {logoutButton}
       </div>
+      <ChangePasswordDialog open={changeOpen} setOpen={setChangeOpen} />
     </div>
   )
 }

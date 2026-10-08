@@ -1,5 +1,4 @@
 import * as React from "react"
-import { Link } from "react-router-dom"
 import toast from "react-hot-toast"
 import { Check, Copy, Loader2, RefreshCw, Search, X } from "lucide-react"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -47,13 +46,7 @@ function GstinCell({ gstin, sub }: { gstin: string; sub?: string | null }) {
   return (
     <div className="flex flex-col gap-0.5">
       <div className="flex items-center gap-1.5">
-        <Link
-          to={`/sync-details/${gstin}`}
-          title={`View details for ${gstin}`}
-          className="text-info font-mono text-[13px] font-medium break-all"
-        >
-          {gstin}
-        </Link>
+        <span className="font-mono text-[13px] font-medium break-all">{gstin}</span>
         <Button
           variant="ghost"
           size="icon"
@@ -76,6 +69,19 @@ function GstinCell({ gstin, sub }: { gstin: string; sub?: string | null }) {
 }
 
 const columns: ColumnDef<VendorPartyDetails>[] = [
+  {
+    id: "slno",
+    header: "SlNo",
+    enableSorting: false,
+    cell: ({ row, table }) => {
+      const { pageIndex, pageSize } = table.getState().pagination
+      return (
+        <span className="font-mono text-xs text-muted-foreground tabular-nums">
+          {pageIndex * pageSize + row.index + 1}
+        </span>
+      )
+    },
+  },
   {
     accessorKey: "vendor_gst",
     header: "GSTIN",

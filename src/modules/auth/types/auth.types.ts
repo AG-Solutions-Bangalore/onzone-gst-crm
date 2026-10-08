@@ -29,3 +29,15 @@ export type LoginResponse = {
     user?: unknown
   }
 }
+
+export type ChangePasswordPayload = {
+  username: string
+  old_password: string
+  password: string
+}
+
+/** Shape returned by `POST /send-password` and `POST /change-password`. */
+export type PasswordActionResponse = {
+  code?: number
+  msg?: string
+}

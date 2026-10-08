@@ -47,14 +47,17 @@ export function vendorGstStatusVariant(
 
 export const vendorGstTableColumns: ColumnDef<VendorGst>[] = [
   {
-    accessorKey: "id",
-    header: "ID",
-    enableSorting: true,
-    cell: ({ row }) => (
-      <span className="font-mono text-xs text-muted-foreground">
-        #{row.original.id}
-      </span>
-    ),
+    id: "slno",
+    header: "SlNo",
+    enableSorting: false,
+    cell: ({ row, table }) => {
+      const { pageIndex, pageSize } = table.getState().pagination
+      return (
+        <span className="font-mono text-xs text-muted-foreground tabular-nums">
+          {pageIndex * pageSize + row.index + 1}
+        </span>
+      )
+    },
   },
   {
     accessorKey: "vendor_gst",
