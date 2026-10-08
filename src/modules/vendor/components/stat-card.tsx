@@ -54,7 +54,7 @@ export function StatCard({
         )}
       </div>
       {to && (
-        <ChevronRight className="text-muted-foreground ml-auto size-4 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100" />
+        <ChevronRight className="text-info ml-auto size-4 shrink-0 opacity-60 transition-opacity duration-150 group-hover:opacity-100" />
       )}
     </CardContent>
   )

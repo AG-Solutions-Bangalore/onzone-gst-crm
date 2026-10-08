@@ -210,6 +210,7 @@ export function DataTable<TData, TValue>({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                title={onRowClick ? "Click to open details" : undefined}
                 className={onRowClick ? "cursor-pointer" : undefined}
               >
                 {row.getVisibleCells().map((cell) => (

@@ -243,7 +243,7 @@ export function DashboardPage() {
                 </CardDescription>
               </div>
               {attentionVendors.length > 0 && (
-                <Button variant="link" className="h-auto p-0" asChild>
+                <Button variant="link" className="text-info h-auto p-0 hover:no-underline" asChild>
                   <Link to="/sync-details?status=attention">
                     View all <ChevronRight className="size-4" />
                   </Link>
@@ -290,10 +290,11 @@ export function DashboardPage() {
             <Link
               key={v.vendor_gst}
               to={`/sync-details/${v.vendor_gst}`}
+              title={`View details for ${v.vendor_gst}`}
               className="hover:bg-surface-low flex items-center justify-between gap-3 rounded-md px-2 py-2.5 transition-colors"
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium">
+                <p className="text-info truncate text-sm font-medium">
                   {v.business_name || v.legal_name || v.vendor_gst}
                 </p>
                 <p className="font-mono text-xs text-muted-foreground">
@@ -302,7 +303,7 @@ export function DashboardPage() {
               </div>
               <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-xs tabular-nums">
                 {v.date_of_registration}
-                <ChevronRight className="size-3.5" />
+                <ChevronRight className="text-info size-3.5" />
               </span>
             </Link>
           ))}
