@@ -7,10 +7,12 @@ import { cn } from "@/lib/utils.ts"
 type StatTone = "default" | "success" | "accent" | "error"
 
 const toneStyles: Record<StatTone, string> = {
-  default: "bg-surface-low text-primary",
-  success: "bg-secondary-container text-on-secondary-container",
-  accent: "bg-tertiary-container text-on-tertiary-container",
-  error: "bg-error-container text-on-error-container",
+  default: "bg-info/10 border border-info/25 text-info",
+  success:
+    "bg-emerald-500/10 border border-emerald-600/25 text-emerald-600 dark:text-emerald-400",
+  accent:
+    "bg-indigo-500/10 border border-indigo-500/25 text-indigo-500 dark:text-indigo-300",
+  error: "bg-destructive/10 border border-destructive/25 text-destructive",
 }
 
 type StatCardProps = {
@@ -36,11 +38,11 @@ export function StatCard({
     <CardContent className="flex items-center gap-4 p-5">
       <span
         className={cn(
-          "flex size-11 shrink-0 items-center justify-center rounded-lg",
+          "flex size-12 shrink-0 items-center justify-center rounded-full",
           toneStyles[tone],
         )}
       >
-        <Icon className="size-5" />
+        <Icon className="size-6" />
       </span>
       <div className="min-w-0">
         <p className="text-2xl leading-8 font-normal tracking-tight tabular-nums">

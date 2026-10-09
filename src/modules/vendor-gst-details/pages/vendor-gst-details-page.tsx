@@ -234,7 +234,7 @@ export function VendorGstDetailsPage() {
                 placeholder="Search party, brand, GSTIN…"
                 value={search}
                 onChange={handleSearchChange}
-                className="pr-8 pl-8 text-sm"
+                className="border-border text-foreground placeholder:text-muted-foreground focus-visible:border-info rounded-xl pr-8 pl-8 text-sm"
               />
               {search && (
                 <button

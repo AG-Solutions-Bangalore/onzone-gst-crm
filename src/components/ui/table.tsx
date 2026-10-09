@@ -6,7 +6,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      className="border-outline-variant bg-card w-full overflow-x-auto rounded-lg border shadow-sm"
+      className="border-border bg-card w-full overflow-x-auto rounded-2xl border shadow-sm"
     >
       <table
         data-slot="table"
@@ -21,7 +21,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return (
     <thead
       data-slot="table-header"
-      className={cn("bg-surface-lowest [&_tr]:border-b", className)}
+      className={cn("bg-card border-b border-border/80 [&_tr]:border-b-0", className)}
       {...props}
     />
   )
@@ -42,7 +42,7 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
     <tfoot
       data-slot="table-footer"
       className={cn(
-        "bg-surface-lowest border-t font-medium [&>tr]:last:border-b-0",
+        "bg-card border-t border-border font-medium [&>tr]:last:border-b-0",
         className,
       )}
       {...props}
@@ -55,7 +55,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "hover:bg-surface-low border-b border-outline-variant transition-colors duration-150 data-[state=selected]:bg-surface-low",
+        "hover:bg-muted/50 border-b border-border/70 transition-colors duration-150 data-[state=selected]:bg-muted last:border-b-0",
         className,
       )}
       {...props}
@@ -68,7 +68,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-muted-foreground h-10 px-4 text-left align-middle text-xs font-medium tracking-wide whitespace-nowrap",
+        "text-muted-foreground h-11 px-4 text-left align-middle text-xs md:text-sm font-normal tracking-normal whitespace-nowrap",
         className,
       )}
       {...props}
@@ -81,7 +81,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "text-foreground px-4 py-3 align-middle text-sm whitespace-nowrap",
+        "text-foreground px-4 py-3.5 align-middle text-sm whitespace-nowrap",
         className,
       )}
       {...props}

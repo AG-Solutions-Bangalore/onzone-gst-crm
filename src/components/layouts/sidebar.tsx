@@ -47,11 +47,11 @@ function SidebarNav({
               title={item.label}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]",
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] border border-transparent",
                   collapsed && "justify-center px-2",
                   isActive
-                    ? "bg-surface-low text-primary font-medium"
-                    : "text-muted-foreground hover:bg-surface-lowest hover:text-foreground",
+                    ? "bg-muted border-border text-foreground font-medium shadow-xs"
+                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                 )
               }
             >
@@ -79,7 +79,7 @@ function SidebarUser({ collapsed }: { collapsed?: boolean }) {
   const avatar = (
     <span
       title={user?.name ?? "User"}
-      className="bg-primary text-primary-foreground flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold"
+      className="bg-info/10 border border-info/25 text-info flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold"
     >
       {(user?.name ?? "U").charAt(0).toUpperCase()}
     </span>
@@ -92,7 +92,7 @@ function SidebarUser({ collapsed }: { collapsed?: boolean }) {
       aria-label="Log out"
       title="Log out"
       onClick={handleLogout}
-      className="size-8 shrink-0"
+      className="size-8 shrink-0 text-muted-foreground hover:text-foreground"
     >
       <LogOut className="size-4" />
     </Button>
@@ -105,7 +105,7 @@ function SidebarUser({ collapsed }: { collapsed?: boolean }) {
       aria-label="Change password"
       title="Change password"
       onClick={() => setChangeOpen(true)}
-      className="size-8 shrink-0"
+      className="size-8 shrink-0 text-muted-foreground hover:text-foreground"
     >
       <KeyRound className="size-4" />
     </Button>
@@ -113,7 +113,7 @@ function SidebarUser({ collapsed }: { collapsed?: boolean }) {
 
   if (collapsed) {
     return (
-      <div className="border-outline-variant/60 flex flex-col items-center gap-2 border-t p-3">
+      <div className="border-border flex flex-col items-center gap-2 border-t p-3">
         {avatar}
         {changePasswordButton}
         {logoutButton}
@@ -123,8 +123,8 @@ function SidebarUser({ collapsed }: { collapsed?: boolean }) {
   }
 
   return (
-    <div className="border-outline-variant/60 border-t p-3">
-      <div className="bg-surface-lowest flex items-center gap-3 rounded-lg p-2.5">
+    <div className="border-border border-t p-3">
+      <div className="bg-muted/60 border border-border flex items-center gap-3 rounded-xl p-2.5">
         {avatar}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{user?.name ?? "—"}</p>

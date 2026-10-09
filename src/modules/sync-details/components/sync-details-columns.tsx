@@ -108,7 +108,7 @@ export const syncDetailsColumns: ColumnDef<VendorTableRow>[] = [
     header: "GSTIN Status",
     enableSorting: true,
     cell: ({ row }) => (
-      <Badge variant={gstinStatusVariant(row.original.gstin_status)}>
+      <Badge variant={gstinStatusVariant(row.original.gstin_status)} className="whitespace-normal text-center">
         {row.original.gstin_status || "Unknown"}
       </Badge>
     ),
