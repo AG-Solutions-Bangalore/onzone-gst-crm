@@ -1,49 +1,50 @@
-import * as React from "react"
-import { Outlet, useLocation } from "react-router-dom"
-import { ChevronsLeft, ChevronsRight, Menu } from "lucide-react"
+import * as React from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { ChevronsLeft, ChevronsRight, Menu } from "lucide-react";
 
-import { Sidebar } from "@/components/layouts/sidebar.tsx"
-import { ThemeToggle } from "@/components/theme-toggle.tsx"
-import { Button } from "@/components/ui/button.tsx"
-import { AuthSessionWatcher, useAuth } from "@/modules/auth/index.ts"
+import { Sidebar } from "@/components/layouts/sidebar.tsx";
+import { ThemeToggle } from "@/components/theme-toggle.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { AuthSessionWatcher, useAuth } from "@/modules/auth/index.ts";
 
 function pageTitle(pathname: string): string {
-  if (pathname === "/") return "Dashboard"
-  if (pathname === "/vendor-gst") return "Vendor GST"
-  if (pathname === "/vendor-gst-details") return "Vendor GST Details"
-  if (pathname === "/sync-details") return "Sync Details"
-  if (pathname.startsWith("/sync-details/") || pathname.startsWith("/vendors/")) return "Sync Details Profile"
-  if (pathname === "/vendors") return "Vendor GST"
-  return "OnZone"
+  if (pathname === "/") return "Dashboard";
+  if (pathname === "/vendor-gst") return "Vendor GST";
+  if (pathname === "/vendor-gst-details") return "Vendor GST Details";
+  if (pathname === "/sync-details") return "Sync Details";
+  if (pathname.startsWith("/sync-details/") || pathname.startsWith("/vendors/"))
+    return "Sync Details Profile";
+  if (pathname === "/vendors") return "Vendor GST";
+  return "OnZone";
 }
 
 /** Dashboard shell: left sidebar + topbar + full-width content. */
 export function RootLayout() {
-  const [sidebarOpen, setSidebarOpen] = React.useState(false)
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [collapsed, setCollapsed] = React.useState<boolean>(() => {
     try {
-      return localStorage.getItem("onzone.sidebar.collapsed") === "1"
+      return localStorage.getItem("onzone.sidebar.collapsed") === "1";
     } catch {
-      return false
+      return false;
     }
-  })
-  const { pathname } = useLocation()
-  const { user } = useAuth()
+  });
+  const { pathname } = useLocation();
+  const { user } = useAuth();
 
   React.useEffect(() => {
-    setSidebarOpen(false)
-  }, [pathname])
+    setSidebarOpen(false);
+  }, [pathname]);
 
   function toggleCollapsed() {
     setCollapsed((prev) => {
-      const next = !prev
+      const next = !prev;
       try {
-        localStorage.setItem("onzone.sidebar.collapsed", next ? "1" : "0")
+        localStorage.setItem("onzone.sidebar.collapsed", next ? "1" : "0");
       } catch {
         // private mode — preference just won't persist
       }
-      return next
-    })
+      return next;
+    });
   }
 
   return (
@@ -56,7 +57,7 @@ export function RootLayout() {
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="border-outline-variant/60 bg-background/80 sticky top-0 z-30 border-b backdrop-blur">
+        <header className="border-border bg-background/80 sticky top-0 z-30 border-b backdrop-blur">
           <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-2">
               <Button
@@ -101,11 +102,15 @@ export function RootLayout() {
           <Outlet />
         </main>
 
-        <footer className="border-outline-variant/60 text-muted-foreground flex flex-wrap items-center justify-between gap-2 border-t px-4 py-4 text-xs sm:px-6 lg:px-8">
-          <span>OnZone GST CRM · Technical Minimalism · DESIGN.md tokens</span>
-          <span>Crafted by <a href="https://ag-solutions.in/" className="text-primary">ag-solutions</a></span>
+        <footer className="border-border text-muted-foreground flex flex-wrap items-center justify-between gap-2 border-t px-4 py-4 text-xs sm:px-6 lg:px-8">
+          <span>
+            Crafted by{" "}
+            <a href="https://ag-solutions.in/" className="text-primary">
+              ag-solutions
+            </a>
+          </span>
         </footer>
       </div>
     </div>
-  )
+  );
 }

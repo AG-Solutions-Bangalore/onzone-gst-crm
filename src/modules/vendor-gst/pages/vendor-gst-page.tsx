@@ -105,7 +105,7 @@ export function VendorGstPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               {/* Status pills */}
-              <div className="border-border/60 bg-muted/20 flex items-center rounded-lg border p-1 text-xs">
+              <div className="border-border bg-muted/50 flex items-center rounded-xl border p-1 text-xs">
                 {(
                   [
                     { id: "all", label: "All", count: counts.all },
@@ -118,9 +118,9 @@ export function VendorGstPage() {
                     type="button"
                     onClick={() => handleStatusChange(item.id)}
                     className={cn(
-                      "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-all",
+                      "flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-medium transition-all",
                       status === item.id
-                        ? "bg-background text-foreground shadow-xs"
+                        ? "bg-card border border-border text-foreground shadow-xs"
                         : "text-muted-foreground hover:text-foreground",
                     )}
                   >
@@ -147,7 +147,7 @@ export function VendorGstPage() {
                 placeholder="Search GSTIN or tag…"
                 value={search}
                 onChange={handleSearchChange}
-                className="pr-8 pl-8 text-sm"
+                className="border-border text-foreground placeholder:text-muted-foreground focus-visible:border-info rounded-xl pr-8 pl-8 text-sm"
               />
               {search && (
                 <button

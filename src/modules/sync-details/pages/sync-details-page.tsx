@@ -145,7 +145,7 @@ export function SyncDetailsPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               {/* Status pills */}
-              <div className="border-border/60 bg-muted/20 flex items-center rounded-lg border p-1 text-xs">
+              <div className="border-border bg-muted/50 flex items-center rounded-xl border p-1 text-xs">
                 {(
                   [
                     { id: "all", label: "All", count: counts.all },
@@ -158,9 +158,9 @@ export function SyncDetailsPage() {
                     type="button"
                     onClick={() => updateStatus(item.id)}
                     className={cn(
-                      "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-all",
+                      "flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-medium transition-all",
                       status === item.id
-                        ? "bg-background text-foreground shadow-xs"
+                        ? "bg-card border border-border text-foreground shadow-xs"
                         : "text-muted-foreground hover:text-foreground",
                     )}
                   >
@@ -184,7 +184,7 @@ export function SyncDetailsPage() {
                 value={type}
                 onChange={(e) => updateType(e.target.value as TypeFilter)}
                 aria-label="Taxpayer type"
-                className="bg-card text-foreground border-input focus-visible:border-ring h-9 w-36 rounded-md border px-2 text-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/10"
+                className="bg-card text-foreground border-border hover:border-muted-foreground/40 h-9 w-36 rounded-xl border px-3 text-xs outline-none transition-colors cursor-pointer"
               >
                 {TYPE_FILTERS.map((f) => (
                   <option key={f.value} value={f.value}>
@@ -201,7 +201,7 @@ export function SyncDetailsPage() {
                 placeholder="Search vendor, PAN, GSTIN…"
                 value={search}
                 onChange={handleSearchChange}
-                className="pr-8 pl-8 text-sm"
+                className="border-border text-foreground placeholder:text-muted-foreground focus-visible:border-info rounded-xl pr-8 pl-8 text-sm"
               />
               {search && (
                 <button

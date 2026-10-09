@@ -85,7 +85,7 @@ export const vendorTableColumns: ColumnDef<VendorTableRow>[] = [
     header: "GSTIN status",
     enableSorting: true,
     cell: ({ row }) => (
-      <Badge variant={gstinStatusVariant(row.original.gstin_status)}>
+      <Badge variant={gstinStatusVariant(row.original.gstin_status)} className="whitespace-normal text-center">
         {row.original.gstin_status || "Unknown"}
       </Badge>
     ),
@@ -133,7 +133,7 @@ export const attentionColumns: ColumnDef<VendorGstSyncDetails>[] = [
     header: "Status",
     enableSorting: true,
     cell: ({ row }) => (
-      <Badge variant={gstinStatusVariant(row.original.gstin_status)}>
+      <Badge variant={gstinStatusVariant(row.original.gstin_status)} className="whitespace-normal text-center">
         {row.original.gstin_status || "Unknown"}
       </Badge>
     ),
@@ -287,7 +287,7 @@ export const brandWiseTransactionColumns: ColumnDef<BrandTransactionRow>[] = [
     header: "Taxable Amount (₹)",
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="text-blue-500 dark:text-[#5aa9ff] text-[15px] font-semibold tabular-nums">
+      <span className="text-blue-600 dark:text-blue-300 text-[15px] font-semibold tabular-nums">
         {formatINR(row.original.taxableAmount)}
       </span>
     ),

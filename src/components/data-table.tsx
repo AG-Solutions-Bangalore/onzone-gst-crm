@@ -156,7 +156,7 @@ export function DataTable<TData, TValue>({
                 setGlobalFilter(e.target.value)
               }
             }}
-            className="pl-9"
+            className="border-border text-foreground placeholder:text-muted-foreground focus-visible:border-info rounded-xl pl-9 text-sm"
           />
         </div>
       )}
@@ -239,7 +239,7 @@ export function DataTable<TData, TValue>({
         </TableBody>
       </Table>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground pt-1 px-1">
         <div className="flex items-center gap-3">
           <p>
             Page {pagination.pageIndex + 1} of {displayPageCount} · {totalCount}{" "}
@@ -257,7 +257,7 @@ export function DataTable<TData, TValue>({
                   table.setPageSize(nextSize)
                 }
               }}
-              className="bg-card text-foreground border-outline-variant rounded border px-1.5 py-0.5 text-xs"
+              className="bg-card text-foreground border-border hover:border-muted-foreground/40 rounded-lg border px-2 py-1 text-xs outline-none cursor-pointer transition-colors"
             >
               {pageSizeOptions.map((opt) => (
                 <option key={opt} value={opt}>
@@ -270,8 +270,9 @@ export function DataTable<TData, TValue>({
 
         <div className="flex items-center gap-2">
           <Button
-            variant="secondary"
+            variant="outline"
             size="sm"
+            className="rounded-lg h-8 px-3 text-xs disabled:opacity-40"
             onClick={() => {
               if (isManual) {
                 onPageChange?.(Math.max(0, pagination.pageIndex - 1))
@@ -284,8 +285,9 @@ export function DataTable<TData, TValue>({
             <ChevronLeft className="size-4" /> Prev
           </Button>
           <Button
-            variant="secondary"
+            variant="outline"
             size="sm"
+            className="rounded-lg h-8 px-3 text-xs disabled:opacity-40"
             onClick={() => {
               if (isManual) {
                 onPageChange?.(pagination.pageIndex + 1)
