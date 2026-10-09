@@ -1,6 +1,10 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { Link } from "react-router-dom"
 import { Badge } from "@/components/ui/badge.tsx"
+import {
+  CallActionButtons,
+  getContactLinks,
+} from "@/modules/vendor/components/contact-actions.tsx"
 import type {
   VendorGstSyncDetails,
   VendorPartyDetails,
@@ -67,6 +71,26 @@ export const vendorTableColumns: ColumnDef<VendorTableRow>[] = [
         sub={row.original.business_name}
       />
     ),
+  },
+  {
+    accessorKey: "mobile",
+    header: "Mobile",
+    enableSorting: true,
+    cell: ({ row }) => {
+      const mobile = row.original.mobile
+      const links = getContactLinks(mobile)
+      if (!links.digits) {
+        return <span className="text-muted-foreground text-sm">—</span>
+      }
+      return (
+        <div className="flex flex-col gap-1.5 py-0.5 min-w-[140px]">
+          <span className="font-mono text-xs font-medium tabular-nums">
+            {links.raw}
+          </span>
+          <CallActionButtons mobile={links.raw} compact />
+        </div>
+      )
+    },
   },
   {
     accessorKey: "taxpayer_type",

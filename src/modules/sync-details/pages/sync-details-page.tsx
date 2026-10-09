@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useSearchParams } from "react-router-dom"
 import toast from "react-hot-toast"
 import { Loader2, RefreshCw, Search, X } from "lucide-react"
 
@@ -25,10 +25,9 @@ const TYPE_FILTERS: { value: TypeFilter; label: string }[] = [
   { value: "Composition", label: "Composition" },
 ]
 
-/** `/sync-details` — Portal-synced vendor profiles with filters, search, sync trigger, and Excel export. */
+/** `/sync-details` (Excel Detail) — plain list of portal-synced vendor profiles. No detail popup. */
 export function SyncDetailsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const navigate = useNavigate()
 
   const statusParam = searchParams.get("status")
   const status: StatusFilter =
@@ -96,9 +95,9 @@ export function SyncDetailsPage() {
   }
 
   function handleRefresh() {
-    const id = toast.loading("Refreshing GST sync details…")
+    const id = toast.loading("Refreshing Excel details…")
     profilesView.refetch().then(
-      () => toast.success("GST sync details updated.", { id }),
+      () => toast.success("Excel details updated.", { id }),
       () => toast.error("Failed to refresh. Try again.", { id }),
     )
   }
@@ -111,10 +110,10 @@ export function SyncDetailsPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-[28px] leading-9 font-normal tracking-tight">
-            Sync Details
+            Excel Detail
           </h1>
           <p className="text-muted-foreground mt-1 text-xs">
-            GST Portal verified vendor profiles, active taxpayer data, and compliance records
+            GST Portal verified vendor profiles — plain list view, no detail popup
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -228,7 +227,7 @@ export function SyncDetailsPage() {
           ) : isError ? (
             <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
               <p className="text-destructive text-sm font-medium">
-                Failed to load Sync Details.
+                Failed to load Excel Detail records.
               </p>
               <Button variant="secondary" size="sm" onClick={() => profilesView.refetch()}>
                 Try again
@@ -244,7 +243,6 @@ export function SyncDetailsPage() {
               pageCount={profilesView.pageCount}
               onPageChange={setPage}
               onPageSizeChange={handlePageSizeChange}
-              onRowClick={(row) => navigate(`/sync-details/${row.vendor_gst}`)}
               emptyMessage={
                 search.trim() || status !== "all" || type !== "all"
                   ? "No sync records match your search / filters."
