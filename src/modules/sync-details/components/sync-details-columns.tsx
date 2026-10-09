@@ -1,6 +1,6 @@
 import * as React from "react"
-import type { ColumnDef } from "@tanstack/react-table"
 import { Link } from "react-router-dom"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Check, Copy } from "lucide-react"
 import toast from "react-hot-toast"
 
@@ -10,6 +10,10 @@ import {
   fetchStatusVariant,
   gstinStatusVariant,
 } from "@/modules/vendor/components/vendor-columns.tsx"
+import {
+  CallActionButtons,
+  getContactLinks,
+} from "@/modules/vendor/components/contact-actions.tsx"
 import type { VendorTableRow } from "@/modules/vendor/types/vendor.types.ts"
 
 function CopyGstinBtn({ gstin }: { gstin: string }) {
@@ -65,8 +69,7 @@ export const syncDetailsColumns: ColumnDef<VendorTableRow>[] = [
           <div className="flex items-center gap-1.5">
             <Link
               to={`/sync-details/${gstin}`}
-              title={`View details for ${gstin}`}
-              className="text-info font-mono text-[13px] font-medium break-all"
+              className="text-info hover:underline font-mono text-[13px] font-medium break-all"
             >
               {gstin}
             </Link>
@@ -90,6 +93,26 @@ export const syncDetailsColumns: ColumnDef<VendorTableRow>[] = [
         {row.original.legal_name || "—"}
       </span>
     ),
+  },
+  {
+    accessorKey: "mobile",
+    header: "Mobile",
+    enableSorting: true,
+    cell: ({ row }) => {
+      const mobile = row.original.mobile
+      const links = getContactLinks(mobile)
+      if (!links.digits) {
+        return <span className="text-muted-foreground text-sm">—</span>
+      }
+      return (
+        <div className="flex flex-col gap-1.5 py-0.5 min-w-[140px]">
+          <span className="font-mono text-xs font-medium tabular-nums">
+            {links.raw}
+          </span>
+          <CallActionButtons mobile={links.raw} compact />
+        </div>
+      )
+    },
   },
   {
     accessorKey: "taxpayer_type",

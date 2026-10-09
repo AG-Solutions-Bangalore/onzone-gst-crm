@@ -1,6 +1,7 @@
 import * as React from "react"
+import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
-import { Check, Copy, Loader2, RefreshCw, Search, X } from "lucide-react"
+import { Check, Copy, Eye, Loader2, RefreshCw, Search, X } from "lucide-react"
 import type { ColumnDef } from "@tanstack/react-table"
 
 import { DataTable } from "@/components/data-table.tsx"
@@ -68,7 +69,30 @@ function GstinCell({ gstin, sub }: { gstin: string; sub?: string | null }) {
   )
 }
 
-const columns: ColumnDef<VendorPartyDetails>[] = [
+/** Per-row View actions. */
+function RowActions({ gstin }: { gstin: string }) {
+  const navigate = useNavigate()
+
+  function openDetails(e: React.MouseEvent) {
+    e.stopPropagation()
+    navigate(`/vendor-gst-details/${gstin}`)
+  }
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="size-8"
+      title={`View details for ${gstin}`}
+      aria-label="View details"
+      onClick={openDetails}
+    >
+      <Eye className="size-4" />
+    </Button>
+  )
+}
+
+const vendorGstDetailsColumns: ColumnDef<VendorPartyDetails>[] = [
   {
     id: "slno",
     header: "SlNo",
@@ -110,16 +134,6 @@ const columns: ColumnDef<VendorPartyDetails>[] = [
     ),
   },
   {
-    accessorKey: "gst_amount",
-    header: "GST Amount",
-    enableSorting: true,
-    cell: ({ row }) => (
-      <span className="font-mono text-sm tabular-nums">
-        {formatCurrency(row.original.gst_amount)}
-      </span>
-    ),
-  },
-  {
     accessorKey: "town",
     header: "Town / District",
     enableSorting: true,
@@ -134,9 +148,15 @@ const columns: ColumnDef<VendorPartyDetails>[] = [
     enableSorting: true,
     cell: ({ row }) => row.original.belt || "—",
   },
+  {
+    id: "actions",
+    header: "Actions",
+    enableSorting: false,
+    cell: ({ row }) => <RowActions gstin={row.original.vendor_gst} />,
+  },
 ]
 
-/** `/vendor-gst-details` — Party / Brand line items registry with upload, export, and row deletion. */
+/** `/vendor-gst-details` — Party / Brand line items registry with upload, export, row actions, and row deletion. */
 export function VendorGstDetailsPage() {
   const [search, setSearch] = React.useState("")
   const [page, setPage] = React.useState(0)
@@ -269,7 +289,7 @@ export function VendorGstDetailsPage() {
             </div>
           ) : (
             <DataTable
-              columns={columns}
+              columns={vendorGstDetailsColumns}
               data={partyView.rows}
               totalRows={partyView.total}
               pageIndex={page}

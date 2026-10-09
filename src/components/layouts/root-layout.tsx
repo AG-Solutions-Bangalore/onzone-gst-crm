@@ -11,9 +11,13 @@ function pageTitle(pathname: string): string {
   if (pathname === "/") return "Dashboard";
   if (pathname === "/vendor-gst") return "Vendor GST";
   if (pathname === "/vendor-gst-details") return "Vendor GST Details";
-  if (pathname === "/sync-details") return "Sync Details";
-  if (pathname.startsWith("/sync-details/") || pathname.startsWith("/vendors/"))
-    return "Sync Details Profile";
+  if (pathname === "/sync-details") return "Excel Detail";
+  if (
+    pathname.startsWith("/sync-details/") ||
+    pathname.startsWith("/vendors/") ||
+    pathname.startsWith("/vendor-gst-details/")
+  )
+    return "Vendor GST Profile";
   if (pathname === "/vendors") return "Vendor GST";
   return "OnZone";
 }

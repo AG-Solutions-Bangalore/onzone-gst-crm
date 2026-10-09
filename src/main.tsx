@@ -35,6 +35,7 @@ const router = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       { path: "vendor-gst", element: <VendorGstPage /> },
       { path: "vendor-gst-details", element: <VendorGstDetailsPage /> },
+      { path: "vendor-gst-details/:gstin", element: <SyncDetailProfilePage /> },
       { path: "sync-details", element: <SyncDetailsPage /> },
       { path: "sync-details/:gstin", element: <SyncDetailProfilePage /> },
       // Backward compatibility aliases
