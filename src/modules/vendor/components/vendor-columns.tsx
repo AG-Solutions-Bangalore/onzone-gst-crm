@@ -140,15 +140,27 @@ export const attentionColumns: ColumnDef<VendorGstSyncDetails>[] = [
   },
 ]
 
-function formatCurrency(val: unknown): string {
+export function parseAmount(val: unknown): number {
+  if (val === null || val === undefined || val === "") return 0
+  if (typeof val === "number") return isNaN(val) ? 0 : val
+  const num = Number(String(val).replace(/[^0-9.-]/g, ""))
+  return isNaN(num) ? 0 : num
+}
+
+export function formatINR(val: unknown): string {
   if (val === null || val === undefined || val === "") return "—"
-  const num = Number(val)
+  const num = typeof val === "number" ? val : parseAmount(val)
   if (isNaN(num)) return String(val)
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(num)
+}
+
+function formatCurrency(val: unknown): string {
+  return formatINR(val)
 }
 
 /** Table columns for party/brand rows (`fetch-vendor-gst-details-list`). */
@@ -217,6 +229,78 @@ export const gstDetailsTableColumns: ColumnDef<VendorPartyDetails>[] = [
     header: "Belt",
     enableSorting: true,
     cell: ({ row }) => row.original.belt || "—",
+  },
+]
+
+/** One aggregated row for the “Brand-wise Transactions” card. */
+export type BrandTransactionRow = {
+  brand: string
+  taxableAmount: number
+  gstAmount: number
+  count: number
+}
+
+/** Group party/brand line items by brand, summing taxable + GST amounts. */
+export function groupPartyRowsByBrand(rows: VendorPartyDetails[]): BrandTransactionRow[] {
+  const map = new Map<string, BrandTransactionRow>()
+  for (const r of rows) {
+    const key = (r.brand || "—").trim().toUpperCase() || "—"
+    const existing = map.get(key)
+    if (existing) {
+      existing.taxableAmount += parseAmount(r.amount)
+      existing.gstAmount += parseAmount(r.gst_amount)
+      existing.count += 1
+    } else {
+      map.set(key, {
+        brand: key,
+        taxableAmount: parseAmount(r.amount),
+        gstAmount: parseAmount(r.gst_amount),
+        count: 1,
+      })
+    }
+  }
+  return [...map.values()].sort((a, b) => b.taxableAmount - a.taxableAmount)
+}
+
+/** Columns for the Brand-wise Transactions table (design: # / Brand / Taxable / GST). */
+export const brandWiseTransactionColumns: ColumnDef<BrandTransactionRow>[] = [
+  {
+    id: "slno",
+    header: "#",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="text-foreground text-[15px] tabular-nums">{row.index + 1}</span>
+    ),
+  },
+  {
+    accessorKey: "brand",
+    header: "Brand",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-foreground text-[15px] font-medium tracking-wide">
+        {row.original.brand}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "taxableAmount",
+    header: "Taxable Amount (₹)",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-blue-500 dark:text-[#5aa9ff] text-[15px] font-semibold tabular-nums">
+        {formatINR(row.original.taxableAmount)}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "gstAmount",
+    header: "GST Amount (₹)",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-amber-600 dark:text-amber-300 text-[15px] font-semibold tabular-nums">
+        {formatINR(row.original.gstAmount)}
+      </span>
+    ),
   },
 ]
 
