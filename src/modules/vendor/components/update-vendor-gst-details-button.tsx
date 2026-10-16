@@ -30,6 +30,12 @@ export function UpdateVendorGstDetailsButton() {
 
   const effectiveTag = tag || tags[0] || ""
 
+  React.useEffect(() => {
+    if (!tag && tags.length > 0) {
+      setTag(tags[0])
+    }
+  }, [tag, tags])
+
   function handleClick() {
     if (!effectiveTag) {
       toast.error("Pick a vendor tag first.")
@@ -91,7 +97,7 @@ export function UpdateVendorGstDetailsButton() {
         variant="default"
         size="sm"
         onClick={handleClick}
-        disabled={updateMutation.isPending || !tag}
+        disabled={updateMutation.isPending || !effectiveTag}
         title={
           tagsQuery.isError ? "Could not load tags — retry via Refresh" : undefined
         }

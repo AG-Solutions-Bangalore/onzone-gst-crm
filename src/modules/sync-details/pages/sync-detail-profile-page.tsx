@@ -245,7 +245,7 @@ export function SyncDetailProfilePage() {
         </p>
         <Button variant="secondary" size="sm" asChild className="mt-2">
           <Link to="/vendor-gst-details">
-            <ArrowLeft className="size-4" /> Back to Vendor GST Details
+            <ArrowLeft className="size-4" /> Back to Excel Data
           </Link>
         </Button>
       </div>
@@ -312,7 +312,7 @@ export function SyncDetailProfilePage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/vendor-gst-details">
-            <ArrowLeft className="size-4" /> Vendor GST Details
+            <ArrowLeft className="size-4" /> Excel Data
           </Link>
         </Button>
         <ExportVendorDetailsButton
@@ -332,7 +332,7 @@ export function SyncDetailProfilePage() {
             <span>
               This vendor was imported via party/brand line items, but full
               taxpayer registration details have not yet been synchronized from
-              the government GST portal. Run GST Sync from Excel Detail to fetch
+              the government GST portal. Run GST Sync from Sync Details to fetch
               the official profile.
             </span>
           </div>

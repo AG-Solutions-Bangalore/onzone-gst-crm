@@ -1,7 +1,7 @@
 import * as React from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
-import { FileSpreadsheet, KeyRound, Layers, LayoutDashboard, LogOut, Sheet, X } from "lucide-react"
+import { FileSpreadsheet, KeyRound, LayoutDashboard, LogOut, RefreshCw, Sheet, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button.tsx"
 import { cn } from "@/lib/utils.ts"
@@ -16,8 +16,8 @@ const GROUPS = [
     label: "GST Management",
     items: [
       { to: "/vendor-gst", label: "Vendor GST", end: false, icon: FileSpreadsheet },
-      { to: "/vendor-gst-details", label: "Vendor GST Details", end: false, icon: Layers },
-      { to: "/sync-details", label: "Excel Detail", end: false, icon: Sheet },
+      { to: "/vendor-gst-details", label: "Excel Data", end: false, icon: Sheet },
+      { to: "/sync-details", label: "Sync Details", end: false, icon: RefreshCw },
     ],
   },
 ]

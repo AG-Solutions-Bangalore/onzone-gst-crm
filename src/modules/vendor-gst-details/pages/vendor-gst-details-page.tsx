@@ -186,9 +186,9 @@ export function VendorGstDetailsPage() {
   }
 
   function handleRefresh() {
-    const id = toast.loading("Refreshing vendor GST details…")
+    const id = toast.loading("Refreshing Excel data…")
     partyView.refetch().then(
-      () => toast.success("Vendor GST details updated.", { id }),
+      () => toast.success("Excel data updated.", { id }),
       () => toast.error("Failed to refresh. Try again.", { id }),
     )
   }
@@ -201,7 +201,7 @@ export function VendorGstDetailsPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-[28px] leading-9 font-normal tracking-tight">
-            Vendor GST Details
+            Excel Data
           </h1>
           <p className="text-muted-foreground mt-1 text-xs">
             Party and brand line items with billing amounts and regional locations
@@ -281,7 +281,7 @@ export function VendorGstDetailsPage() {
           ) : isError ? (
             <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
               <p className="text-destructive text-sm font-medium">
-                Failed to load Vendor GST details.
+                Failed to load Excel data.
               </p>
               <Button variant="secondary" size="sm" onClick={() => partyView.refetch()}>
                 Try again
