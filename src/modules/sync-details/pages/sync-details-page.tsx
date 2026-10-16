@@ -25,7 +25,7 @@ const TYPE_FILTERS: { value: TypeFilter; label: string }[] = [
   { value: "Composition", label: "Composition" },
 ]
 
-/** `/sync-details` (Excel Detail) — plain list of portal-synced vendor profiles. No detail popup. */
+/** `/sync-details` — plain list of portal-synced vendor profiles. No detail popup. */
 export function SyncDetailsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -95,9 +95,9 @@ export function SyncDetailsPage() {
   }
 
   function handleRefresh() {
-    const id = toast.loading("Refreshing Excel details…")
+    const id = toast.loading("Refreshing Sync details…")
     profilesView.refetch().then(
-      () => toast.success("Excel details updated.", { id }),
+      () => toast.success("Sync details updated.", { id }),
       () => toast.error("Failed to refresh. Try again.", { id }),
     )
   }
@@ -110,7 +110,7 @@ export function SyncDetailsPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-[28px] leading-9 font-normal tracking-tight">
-            Excel Detail
+            Sync Details
           </h1>
           <p className="text-muted-foreground mt-1 text-xs">
             GST Portal verified vendor profiles — plain list view, no detail popup
@@ -227,7 +227,7 @@ export function SyncDetailsPage() {
           ) : isError ? (
             <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
               <p className="text-destructive text-sm font-medium">
-                Failed to load Excel Detail records.
+                Failed to load Sync Details records.
               </p>
               <Button variant="secondary" size="sm" onClick={() => profilesView.refetch()}>
                 Try again
